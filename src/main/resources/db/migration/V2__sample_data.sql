@@ -51,8 +51,8 @@ INSERT INTO clients (code, name, business_type, npwp, address, city, province, p
 -- =====================================================
 
 INSERT INTO workshops (code, name, type, address, city, province, phone, email, contact_person, specialization, operating_hours, service_capacity, rating, is_active) VALUES
-('WS001', 'Pandawa 76 - Central Workshop', 'INTERNAL', 'Jl. Proklamasi No. 6', 'Garut', 'Jawa Barat', '081234560001', 'central@pandawa76.com', 'Hendri', 'ENGINE, ELECTRICAL, AC, TRANSMISSION', 'Mon-Sat 08:00-17:00', 10, 4.80, true),
-('WS002', 'Pandawa 76 - Jakarta Branch', 'INTERNAL', 'Jl. Kebon Jeruk No. 45', 'Jakarta Barat', 'DKI Jakarta', '081234560002', 'jakarta@pandawa76.com', 'Agus', 'ENGINE, ELECTRICAL, GENERAL', 'Mon-Sat 08:00-17:00', 8, 4.70, true),
+('WS001', 'Central Workshop', 'INTERNAL', 'Jl. Proklamasi No. 6', 'Garut', 'Jawa Barat', '081234560001', 'central@fms.local', 'Hendri', 'ENGINE, ELECTRICAL, AC, TRANSMISSION', 'Mon-Sat 08:00-17:00', 10, 4.80, true),
+('WS002', 'Jakarta Branch Workshop', 'INTERNAL', 'Jl. Kebon Jeruk No. 45', 'Jakarta Barat', 'DKI Jakarta', '081234560002', 'jakarta@fms.local', 'Agus', 'ENGINE, ELECTRICAL, GENERAL', 'Mon-Sat 08:00-17:00', 8, 4.70, true),
 ('WS003', 'Auto Prima Service', 'PARTNER', 'Jl. MT Haryono No. 88', 'Bandung', 'Jawa Barat', '081234560003', 'info@autoprima.com', 'Dedi', 'ENGINE, TRANSMISSION', 'Mon-Sun 08:00-20:00', 15, 4.50, true),
 ('WS004', 'Bengkel Jaya Motor', 'PARTNER', 'Jl. Asia Afrika No. 123', 'Surabaya', 'Jawa Timur', '081234560004', 'info@jayamotor.com', 'Budi', 'ELECTRICAL, AC', 'Mon-Sat 08:00-18:00', 12, 4.60, true),
 ('WS005', 'Toyota Auto2000', 'CLIENT_RECOMMENDED', 'Jl. Sudirman No. 999', 'Jakarta Pusat', 'DKI Jakarta', '081234560005', 'info@auto2000.com', 'Customer Service', 'ENGINE, ELECTRICAL, AC, TRANSMISSION', 'Mon-Sun 08:00-21:00', 20, 4.90, true);
@@ -62,11 +62,11 @@ INSERT INTO workshops (code, name, type, address, city, province, phone, email, 
 -- =====================================================
 
 INSERT INTO mechanics (code, full_name, email, phone, specialization, certification, experience_years, workshop_id, rating, is_active) VALUES
-('MEC001', 'Ahmad Hidayat', 'ahmad@pandawa76.com', '081234560101', 'ENGINE', 'Engine Specialist Level 3', 10, 1, 4.75, true),
-('MEC002', 'Budi Santoso', 'budi@pandawa76.com', '081234560102', 'ELECTRICAL', 'Automotive Electrician', 8, 1, 4.60, true),
-('MEC003', 'Cecep Supriyadi', 'cecep@pandawa76.com', '081234560103', 'AC', 'AC Technician Certified', 5, 1, 4.50, true),
-('MEC004', 'Dedi Kurniawan', 'dedi@pandawa76.com', '081234560104', 'TRANSMISSION', 'Transmission Expert', 12, 2, 4.80, true),
-('MEC005', 'Eko Prasetyo', 'eko@pandawa76.com', '081234560105', 'GENERAL', 'General Mechanic', 7, 2, 4.55, true);
+('MEC001', 'Ahmad Hidayat', 'ahmad@fms.local', '081234560101', 'ENGINE', 'Engine Specialist Level 3', 10, 1, 4.75, true),
+('MEC002', 'Budi Santoso', 'budi@fms.local', '081234560102', 'ELECTRICAL', 'Automotive Electrician', 8, 1, 4.60, true),
+('MEC003', 'Cecep Supriyadi', 'cecep@fms.local', '081234560103', 'AC', 'AC Technician Certified', 5, 1, 4.50, true),
+('MEC004', 'Dedi Kurniawan', 'dedi@fms.local', '081234560104', 'TRANSMISSION', 'Transmission Expert', 12, 2, 4.80, true),
+('MEC005', 'Eko Prasetyo', 'eko@fms.local', '081234560105', 'GENERAL', 'General Mechanic', 7, 2, 4.55, true);
 
 -- =====================================================
 -- VEHICLES
@@ -286,10 +286,10 @@ INSERT INTO maintenance_schedules (
 -- =====================================================
 
 INSERT INTO system_settings (setting_key, setting_value, setting_type, description, is_public) VALUES
-('company_name', 'CV Pandawa Tujuh Enam FMS', 'STRING', 'Company name', true),
+('company_name', 'FleetOps', 'STRING', 'Company name', true),
 ('company_address', 'Jl. Proklamasi No. 6 Garut, Jawa Barat', 'STRING', 'Company address', true),
 ('company_phone', '+62 895 3914 54779', 'STRING', 'Company phone', true),
-('company_email', 'pandawa76bengkel@gmail.com', 'STRING', 'Company email', true),
+('company_email', 'info@fms.local', 'STRING', 'Company email', true),
 ('tax_percentage', '11', 'INTEGER', 'Tax percentage (PPN)', true),
 ('auto_invoice_generation', 'true', 'BOOLEAN', 'Auto generate invoice on work order completion', false),
 ('default_payment_term', '30', 'INTEGER', 'Default payment term in days', false);

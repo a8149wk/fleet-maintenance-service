@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Aplikasi Fleet Maintenance Service berbasis Spring Boot + Thymeleaf untuk manajemen pemeliharaan kendaraan fleet (seperti Pandawa 76). Sistem ini menangani work order, inventory spare parts, bengkel rekanan, invoicing, dan mobile API.
+Aplikasi Fleet Maintenance Service berbasis Spring Boot + Thymeleaf untuk manajemen pemeliharaan kendaraan fleet. Sistem ini menangani work order, inventory spare parts, bengkel rekanan, invoicing, dan mobile API.
 
 ---
 
@@ -175,8 +175,8 @@ CREATE SEQUENCE seq_mechanic_code START 1;
    - CLI005: PT Charoen Pokphand Indonesia
 
 4. **Workshops (5 locations):**
-   - WS001: Pandawa 76 - Central Workshop (INTERNAL)
-   - WS002: Pandawa 76 - Jakarta Branch (INTERNAL)
+   - WS001: Central Workshop (INTERNAL)
+   - WS002: Jakarta Branch Workshop (INTERNAL)
    - WS003: Auto Prima Service (PARTNER)
    - WS004: Bengkel Jaya Motor (PARTNER)
    - WS005: Toyota Auto2000 (CLIENT_RECOMMENDED)
@@ -1455,16 +1455,6 @@ VOLUME /tmp
 COPY target/*.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
 ```
-
----
-
-## Support & Contact
-
-**CV Pandawa Tujuh Enam FMS**
-- Email: pandawa76bengkel@gmail.com
-- Phone: +62 895 3914 54779
-- Address: Jl. Proklamasi No. 6 Garut, Jawa Barat
-- Instagram: @pandawa76fms
 
 ---
 

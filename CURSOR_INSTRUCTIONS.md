@@ -90,8 +90,8 @@ INSERT clients (5 companies):
 - CLI005: PT Charoen Pokphand (Logistics)
 
 INSERT workshops (5):
-- WS001: Pandawa 76 Central (INTERNAL) - Garut
-- WS002: Pandawa 76 Jakarta (INTERNAL) - Jakarta
+- WS001: Central Workshop (INTERNAL) - Garut
+- WS002: Jakarta Branch Workshop (INTERNAL) - Jakarta
 - WS003: Auto Prima (PARTNER) - Bandung
 - WS004: Bengkel Jaya (PARTNER) - Surabaya
 - WS005: Toyota Auto2000 (CLIENT_RECOMMENDED) - Jakarta

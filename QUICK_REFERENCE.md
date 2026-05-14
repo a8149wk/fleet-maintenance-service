@@ -268,8 +268,8 @@ void transferStock(Long sparePartId, Long fromLocationId, Long toLocationId, Int
 - CLI005: PT Charoen Pokphand
 
 ### Workshops (5)
-- WS001: Pandawa 76 Central (INTERNAL)
-- WS002: Pandawa 76 Jakarta (INTERNAL)
+- WS001: Central Workshop (INTERNAL)
+- WS002: Jakarta Branch Workshop (INTERNAL)
 - WS003: Auto Prima (PARTNER)
 - WS004: Bengkel Jaya (PARTNER)
 - WS005: Toyota Auto2000 (CLIENT_RECOMMENDED)
@@ -462,20 +462,6 @@ export JWT_SECRET=production_secret_key_min_256_bits
 export MAIL_USERNAME=noreply@yourcompany.com
 export MAIL_PASSWORD=mail_password
 ```
-
----
-
-## 📞 Support
-
-**Developer Contact:**
-- Project: Fleet Maintenance System
-- Based on: Pandawa 76 FMS
-
-**Company Reference:**
-- CV Pandawa Tujuh Enam FMS
-- Email: pandawa76bengkel@gmail.com
-- Phone: +62 895 3914 54779
-- Address: Jl. Proklamasi No. 6 Garut, Jawa Barat
 
 ---
 

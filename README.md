@@ -1,6 +1,6 @@
 # Fleet Maintenance System 🚗🔧
 
-Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf untuk perusahaan seperti **CV Pandawa Tujuh Enam FMS**.
+Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf untuk perusahaan transportasi/logistik dengan multi-workshop, multi-client, dan integrasi mobile API.
 
 ## 🎯 Features
 
@@ -240,14 +240,6 @@ server.port=8081
 mvn flyway:repair
 mvn flyway:migrate
 ```
-
-## 📞 Support & Contact
-
-**Project Reference:**
-- Based on: CV Pandawa Tujuh Enam FMS
-- Email: pandawa76bengkel@gmail.com
-- Phone: +62 895 3914 54779
-- Location: Jl. Proklamasi No. 6 Garut, Jawa Barat
 
 ## 📝 License
 
