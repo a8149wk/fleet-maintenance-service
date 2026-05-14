@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Edit Role</title></head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a th:href="@{/admin/roles}" class="text-muted text-small text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i>Back to roles
+            </a>
+            <h2 class="mt-1 mb-1">
+                <i class="fas fa-user-shield text-primary me-2"></i>
+                Edit Role: <span th:text="${role.name}"></span>
+            </h2>
+            <div class="text-muted text-small">
+                Edit the role's details and choose which menu items members of this role can see.
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{|/admin/roles/${role.id}|}" method="post">
+
+        <div class="row g-3">
+            <div class="col-lg-5">
+                <div class="card card-body">
+                    <h6 class="mb-3">Role details</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" th:value="${role.name}"
+                               required maxlength="50"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="4"
+                                  th:text="${role.description}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card card-body">
+                    <h6 class="mb-1">Menu mapping</h6>
+                    <div class="text-muted text-small mb-2">
+                        Check the menu items this role should see in the left sidebar.
+                    </div>
+
+                    <div th:each="entry : ${groupedMenus}">
+                        <div class="text-uppercase text-muted text-tiny fw-semibold mt-3 mb-1"
+                             th:text="${entry.key}">section</div>
+                        <div class="form-check" th:each="m : ${entry.value}">
+                            <input class="form-check-input" type="checkbox" name="menuIds"
+                                   th:id="${'menu_' + m.id}" th:value="${m.id}"
+                                   th:checked="${selectedMenuIds != null and selectedMenuIds.contains(m.id)}"/>
+                            <label class="form-check-label d-flex align-items-center" th:for="${'menu_' + m.id}">
+                                <i th:class="${m.icon != null ? m.icon : 'fas fa-circle'}"
+                                   class="me-2 text-muted"></i>
+                                <span class="me-2" th:text="${m.label}"></span>
+                                <span class="text-muted text-tiny" th:text="${m.path}"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-primary"><i class="fas fa-save me-1"></i>Save</button>
+            <a th:href="@{/admin/roles}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+
+</section>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title th:text="${user.id != null ? 'Edit User' : 'New User'}">User Form</title></head>
+<body>
+<section layout:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a th:href="@{/admin/users}" class="text-muted text-small text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i>Back to users
+            </a>
+            <h2 class="mt-1 mb-1">
+                <i class="fas fa-user-pen text-primary me-2"></i>
+                <span th:text="${user.id != null ? 'Edit User' : 'New User'}">User</span>
+            </h2>
+            <div class="text-muted text-small">Username, profile, role assignment, and account flags.</div>
+        </div>
+    </div>
+
+    <form th:action="${user.id != null ? '/admin/users/' + user.id : '/admin/users'}"
+          method="post" class="card card-body">
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" th:value="${user.username}"
+                       th:disabled="${user.id != null}" required maxlength="50"/>
+                <div class="text-tiny text-muted" th:if="${user.id != null}">Username cannot be changed.</div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" th:value="${user.email}"
+                       required maxlength="100"/>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" name="fullName" th:value="${user.fullName}"
+                       required maxlength="100"/>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Phone</label>
+                <input type="text" class="form-control" name="phone" th:value="${user.phone}"
+                       maxlength="20"/>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Password
+                    <span class="text-muted text-tiny" th:if="${user.id != null}">(leave blank to keep)</span>
+                </label>
+                <input type="password" class="form-control" name="password" autocomplete="new-password"
+                       th:required="${user.id == null}"/>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <div class="form-check me-3">
+                    <input class="form-check-input" type="checkbox" name="isActive" id="isActive"
+                           value="true" th:checked="${user.isActive == null ? true : user.isActive}"/>
+                    <label class="form-check-label" for="isActive">Active</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="isLocked" id="isLocked"
+                           value="true" th:checked="${user.isLocked == true}"/>
+                    <label class="form-check-label" for="isLocked">Locked</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Roles</label>
+                <div class="border rounded p-2">
+                    <div th:if="${allRoles.empty}" class="text-muted text-small">No roles defined yet.</div>
+                    <div class="form-check" th:each="r : ${allRoles}">
+                        <input class="form-check-input" type="checkbox" name="roleIds"
+                               th:id="${'role_' + r.id}" th:value="${r.id}"
+                               th:checked="${selectedRoleIds != null and #lists.contains(selectedRoleIds, r.id)}"/>
+                        <label class="form-check-label" th:for="${'role_' + r.id}">
+                            <strong th:text="${r.name}"></strong>
+                            <span class="text-muted text-tiny ms-1" th:text="${r.description}"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-1"></i>Save
+            </button>
+            <a th:href="@{/admin/users}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+
+</section>
+</body>
+</html>

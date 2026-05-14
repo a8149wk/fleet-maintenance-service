@@ -1,6 +1,35 @@
 (function () {
     'use strict';
     document.addEventListener('DOMContentLoaded', function () {
+        // Mobile sidebar drawer toggle.
+        const sidebar = document.querySelector('[data-fms-sidebar]');
+        const overlay = document.querySelector('[data-fms-sidebar-overlay]');
+        const toggles = document.querySelectorAll('[data-fms-sidebar-toggle]');
+        function openSidebar() {
+            if (!sidebar) return;
+            sidebar.classList.add('show');
+            if (overlay) overlay.classList.add('show');
+        }
+        function closeSidebar() {
+            if (!sidebar) return;
+            sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('show');
+        }
+        toggles.forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (sidebar && sidebar.classList.contains('show')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            });
+        });
+        if (overlay) overlay.addEventListener('click', closeSidebar);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeSidebar();
+        });
+
         document.querySelectorAll('table.sortable').forEach(function (t) {
             t.querySelectorAll('th').forEach(function (th, idx) {
                 th.style.cursor = 'pointer';
