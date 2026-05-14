@@ -2,52 +2,109 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
-<head><title>Financial Report</title></head>
+<head>
+    <title>Financial Report</title>
+</head>
 <body>
 <section layout:fragment="content">
-    <h2 class="mb-3"><i class="fas fa-money-bill-wave text-primary"></i> Financial Report</h2>
+    <div class="page-head d-flex justify-content-between align-items-end flex-wrap gap-2">
+        <div>
+            <h2>Financial Report</h2>
+            <div class="text-tiny text-muted">Revenue by date range and invoice ledger.</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/reports/invoices/export/pdf}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-file-pdf"></i> PDF
+            </a>
+            <a th:href="@{/reports/invoices/export/excel}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-file-excel"></i> Excel
+            </a>
+            <a th:href="@{/reports}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
     <form th:action="@{/reports/financial}" method="get" class="card card-body mb-3">
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
-                <label class="form-label">Start Date</label>
-                <input type="date" name="startDate" th:value="${startDate}" class="form-control"/>
+                <label class="form-label">Start date</label>
+                <input type="date" name="startDate" class="form-control"
+                       th:value="${startDate}"/>
             </div>
             <div class="col-md-4">
-                <label class="form-label">End Date</label>
-                <input type="date" name="endDate" th:value="${endDate}" class="form-control"/>
+                <label class="form-label">End date</label>
+                <input type="date" name="endDate" class="form-control"
+                       th:value="${endDate}"/>
             </div>
-            <div class="col-md-4"><button class="btn btn-primary w-100">Generate</button></div>
+            <div class="col-md-4">
+                <button class="btn btn-primary w-100" type="submit">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+            </div>
         </div>
     </form>
-    <div class="card shadow-sm mb-3">
-        <div class="card-body text-center">
-            <div class="text-muted">Revenue (Paid Invoices)</div>
-            <div class="display-6 text-success"
-                 th:text="${'Rp ' + #numbers.formatDecimal(revenue, 0, 'POINT', 0, 'POINT')}"></div>
-            <div class="text-muted small"
-                 th:text="'Period: ' + ${#temporals.format(startDate, 'dd MMM yyyy')} + ' - ' + ${#temporals.format(endDate, 'dd MMM yyyy')}"></div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--fms-tint-green); color: var(--fms-icon-green);">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Revenue in range</div>
+                    <div class="stat-value"
+                         th:text="'Rp ' + ${#numbers.formatDecimal(revenue != null ? revenue : 0, 0, 'POINT', 0, 'POINT')}"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--fms-tint-blue); color: var(--fms-icon-blue);">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Total invoices</div>
+                    <div class="stat-value" th:text="${#lists.size(invoices)}">0</div>
+                </div>
+            </div>
         </div>
     </div>
+
     <div class="card shadow-sm">
         <div class="table-responsive">
-            <table class="table mb-0">
+            <table class="table table-hover mb-0">
                 <thead class="table-light">
                 <tr>
-                    <th>Invoice #</th><th>Client</th><th>Date</th>
-                    <th class="text-end">Total</th><th class="text-end">Paid</th>
+                    <th>Invoice #</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Due</th>
                     <th>Status</th>
+                    <th class="text-end">Total</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="i : ${invoices}">
-                    <td><a th:href="@{/invoices/{id}(id=${i.id})}" th:text="${i.invoiceNumber}"></a></td>
-                    <td th:text="${i.client.name}"></td>
-                    <td th:text="${#temporals.format(i.invoiceDate, 'dd MMM yyyy')}"></td>
+                <tr th:if="${#lists.isEmpty(invoices)}">
+                    <td colspan="6" class="text-center text-muted py-4">No invoices yet.</td>
+                </tr>
+                <tr th:each="inv : ${invoices}">
+                    <td>
+                        <a th:href="@{/invoices/{id}(id=${inv.id})}" th:text="${inv.invoiceNumber}"></a>
+                    </td>
+                    <td th:text="${inv.client != null ? inv.client.name : '-'}"></td>
+                    <td th:text="${#temporals.format(inv.invoiceDate,'dd MMM yyyy')}"></td>
+                    <td th:text="${inv.dueDate != null ? #temporals.format(inv.dueDate,'dd MMM yyyy') : '-'}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${inv.status.name() == 'PAID' ? 'bg-success' :
+                                                  inv.status.name() == 'PARTIAL' ? 'bg-info' :
+                                                  inv.status.name() == 'OVERDUE' ? 'bg-danger' :
+                                                  inv.status.name() == 'CANCELLED' ? 'bg-secondary' : 'bg-warning'}"
+                              th:text="${inv.status}"></span>
+                    </td>
                     <td class="text-end"
-                        th:text="${'Rp ' + #numbers.formatDecimal(i.totalAmount, 0, 'POINT', 0, 'POINT')}"></td>
-                    <td class="text-end"
-                        th:text="${'Rp ' + #numbers.formatDecimal(i.paidAmount, 0, 'POINT', 0, 'POINT')}"></td>
-                    <td><span class="badge bg-secondary" th:text="${i.status}"></span></td>
+                        th:text="'Rp ' + ${#numbers.formatDecimal(inv.totalAmount, 0, 'POINT', 0, 'POINT')}"></td>
                 </tr>
                 </tbody>
             </table>

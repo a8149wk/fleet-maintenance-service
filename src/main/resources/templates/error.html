@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${status != null ? status + ' ' + error : 'Error'}">Error</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <div class="stat-icon mx-auto mb-3"
+                 style="background: var(--fms-tint-red); color: var(--fms-icon-red); width:56px; height:56px; font-size:24px;">
+                <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="mb-1"
+                th:text="${status != null ? status : 'Something went wrong'}">Error</h3>
+            <div class="text-muted mb-3"
+                 th:text="${error != null ? error : 'An unexpected error occurred.'}">An unexpected error occurred.</div>
+            <p class="text-muted text-tiny mb-4"
+               th:if="${message != null and !#strings.isEmpty(message)}"
+               th:text="${message}"></p>
+            <div class="d-flex justify-content-center gap-2">
+                <a th:href="@{/}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-house"></i> Go to dashboard
+                </a>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left"></i> Go back
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
