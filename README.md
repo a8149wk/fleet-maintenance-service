@@ -16,7 +16,7 @@ Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf u
 - ✅ **Swagger / OpenAPI Sandbox** - Try-it-out playground untuk seluruh `/api/**`
 - ✅ **User & Role Administration** - CRUD pengguna, role, dan mapping role ↔ menu lewat UI
 - ✅ **Custom Branding** - Logo aplikasi bisa diganti admin tanpa redeploy
-- ✅ **SumoPod-style Sidebar** - Layout side-navigation kiri, bisa di-collapse di desktop
+- ✅ **Drawer-style Sidebar** - Layout side-navigation kiri, bisa di-collapse di desktop
 - ✅ **Partner & supplier portals** - Bengkel rekanan dan penyedia spare part melihat WO yang di-assign, mengisi estimasi, dan notifikasi assignment
 - ✅ **External estimate approval** - Admin/manager/finance (sesuai pengaturan role) menyetujui estimasi eksternal; badge antrian di sidebar
 
