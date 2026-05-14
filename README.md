@@ -59,16 +59,6 @@ Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf u
    - Username: `admin`
    - Password: `password123`
 
-## 📖 Documentation
-
-Dokumentasi lengkap tersedia dalam format Markdown:
-
-| File | Description |
-|------|-------------|
-| **[PROJECT_SPECIFICATION.md](PROJECT_SPECIFICATION.md)** | 📘 Spesifikasi lengkap project (DDL, DML, Architecture) |
-| **[CURSOR_INSTRUCTIONS.md](CURSOR_INSTRUCTIONS.md)** | 🤖 Instruksi untuk generate code dengan Cursor AI |
-| **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** | ⚡ Quick reference untuk development |
-
 ## 🗄️ Database Schema
 
 **Core Tables:**
@@ -129,22 +119,6 @@ GET  /api/mobile/inventory
 POST /api/mobile/inventory/check-availability
 ```
 
-## 🚀 Using Cursor AI
-
-Proyek ini dilengkapi dengan instruksi lengkap untuk Cursor AI:
-
-1. Buka `CURSOR_INSTRUCTIONS.md`
-2. Copy instruksi per section ke Cursor Chat
-3. Cursor akan generate code sesuai spesifikasi
-4. Review dan adjust sesuai kebutuhan
-
-**Example:**
-```
-@Cursor: Generate WorkOrderService.java dengan methods:
-- create, approve, start, complete, cancel
-- Include stock reservation logic
-```
-
 ## 📦 Build Commands
 
 ```bash
@@ -193,9 +167,7 @@ fleet-maintenance-system/
 │       ├── db/migration/   # Flyway SQL
 │       ├── templates/      # Thymeleaf HTML
 │       └── static/         # CSS, JS
-├── PROJECT_SPECIFICATION.md    # Full spec
-├── CURSOR_INSTRUCTIONS.md      # AI generation guide
-├── QUICK_REFERENCE.md          # Quick ref
+├── deploy/                 # Deployment kit (config templates, run scripts, PM2, Nginx)
 └── pom.xml
 ```
 
@@ -255,7 +227,4 @@ Proprietary - All Rights Reserved
 ---
 
 **Version:** 1.0.0  
-**Last Updated:** May 2026  
-**Status:** Ready for Cursor AI Generation 🤖
-
-For detailed implementation instructions, see [CURSOR_INSTRUCTIONS.md](CURSOR_INSTRUCTIONS.md)
+**Last Updated:** May 2026
