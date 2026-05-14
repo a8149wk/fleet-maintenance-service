@@ -1,5 +1,8 @@
 # Maven
 target/
+
+# Deployment distribution (built locally by deploy/package.ps1 or .sh)
+dist/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
