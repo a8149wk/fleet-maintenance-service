@@ -1,6 +1,7 @@
 package com.fms.config;
 
 import com.fms.dto.menu.MenuView;
+import com.fms.service.BrandingService;
 import com.fms.service.MenuService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ import java.util.List;
  *   <li>{@code currentPath} — request URI, for marking active nav links.</li>
  *   <li>{@code sidebarMenus} — section-grouped, role-filtered menu tree
  *       consumed by {@code layout/main.html}'s left sidebar.</li>
+ *   <li>{@code logoUrl} — cache-busting URL of the active brand logo,
+ *       used by the sidebar, login page, and favicon.</li>
  * </ul>
  *
  * Thymeleaf 3.1+ no longer exposes {@code #httpServletRequest} by
@@ -30,6 +33,7 @@ import java.util.List;
 public class GlobalModelAttributes {
 
     private final MenuService menuService;
+    private final BrandingService brandingService;
 
     @ModelAttribute("currentPath")
     public String currentPath(HttpServletRequest request) {
@@ -41,5 +45,10 @@ public class GlobalModelAttributes {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<MenuView> menus = menuService.getMenusForUser(auth);
         return menuService.groupBySection(menus);
+    }
+
+    @ModelAttribute("logoUrl")
+    public String logoUrl() {
+        return brandingService.getLogoUrl();
     }
 }
