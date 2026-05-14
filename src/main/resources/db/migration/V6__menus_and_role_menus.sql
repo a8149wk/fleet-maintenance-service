@@ -47,12 +47,18 @@ INSERT INTO menus (code, label, icon, path, section, sort_order) VALUES
 ON CONFLICT (code) DO NOTHING;
 
 -- ---- Role mappings (granted on insert; admins can edit later) ----
+--
+-- NOTE: role rows in this codebase are seeded with the ROLE_ prefix
+-- (e.g. 'ROLE_ADMIN') — that prefix is intentionally stored in the
+-- 'name' column. To stay tolerant of fresh installs that may drop the
+-- prefix in the future, every mapping matches BOTH conventions.
+
 -- ADMIN sees everything.
 INSERT INTO role_menus (role_id, menu_id)
 SELECT r.id, m.id
 FROM roles r
 CROSS JOIN menus m
-WHERE r.name = 'ADMIN'
+WHERE r.name IN ('ADMIN', 'ROLE_ADMIN')
 ON CONFLICT DO NOTHING;
 
 -- MANAGER: operations + analytics, no admin/api-docs.
@@ -63,7 +69,7 @@ JOIN menus m ON m.code IN (
     'dashboard','workorders','vehicles','inventory','invoices',
     'clients','workshops','mechanics','reports'
 )
-WHERE r.name = 'MANAGER'
+WHERE r.name IN ('MANAGER', 'ROLE_MANAGER')
 ON CONFLICT DO NOTHING;
 
 -- FINANCE: dashboard + invoices + reports only.
@@ -71,7 +77,7 @@ INSERT INTO role_menus (role_id, menu_id)
 SELECT r.id, m.id
 FROM roles r
 JOIN menus m ON m.code IN ('dashboard', 'invoices', 'reports')
-WHERE r.name = 'FINANCE'
+WHERE r.name IN ('FINANCE', 'ROLE_FINANCE')
 ON CONFLICT DO NOTHING;
 
 -- MECHANIC: dashboard + work orders + inventory.
@@ -79,7 +85,7 @@ INSERT INTO role_menus (role_id, menu_id)
 SELECT r.id, m.id
 FROM roles r
 JOIN menus m ON m.code IN ('dashboard', 'workorders', 'inventory')
-WHERE r.name = 'MECHANIC'
+WHERE r.name IN ('MECHANIC', 'ROLE_MECHANIC')
 ON CONFLICT DO NOTHING;
 
 -- CLIENT: dashboard + work orders + vehicles + invoices (their own).
@@ -87,5 +93,5 @@ INSERT INTO role_menus (role_id, menu_id)
 SELECT r.id, m.id
 FROM roles r
 JOIN menus m ON m.code IN ('dashboard', 'workorders', 'vehicles', 'invoices')
-WHERE r.name = 'CLIENT'
+WHERE r.name IN ('CLIENT', 'ROLE_CLIENT')
 ON CONFLICT DO NOTHING;

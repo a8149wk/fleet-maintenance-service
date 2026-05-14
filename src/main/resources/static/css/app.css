@@ -101,6 +101,20 @@ a:hover { color: var(--fms-primary-hover); }
     gap: 0.75rem;
     padding: 0 1.25rem;
 }
+.fms-topbar .topbar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-color: var(--fms-border-strong);
+    color: var(--fms-text-muted);
+}
+.fms-topbar .topbar-toggle:hover {
+    background: var(--fms-tint-slate);
+    color: var(--fms-text);
+}
 .fms-topbar .topbar-spacer { flex: 1; }
 .fms-topbar .topbar-user {
     color: var(--fms-text) !important;
@@ -235,6 +249,18 @@ a:hover { color: var(--fms-primary-hover); }
     padding: 0.75rem 1rem;
     color: var(--fms-text-soft);
     text-align: center;
+}
+
+/* ---------- Desktop collapse (toggle via topbar hamburger) ---------- */
+body.sidebar-collapsed .fms-sidebar {
+    transform: translateX(-100%);
+}
+body.sidebar-collapsed .fms-shell {
+    margin-left: 0;
+}
+.fms-sidebar,
+.fms-shell {
+    transition: transform 0.2s ease, margin-left 0.2s ease;
 }
 
 /* ---------- Mobile: sidebar becomes a drawer ---------- */

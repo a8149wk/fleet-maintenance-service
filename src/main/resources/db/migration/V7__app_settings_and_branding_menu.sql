@@ -27,5 +27,5 @@ INSERT INTO role_menus (role_id, menu_id)
 SELECT r.id, m.id
 FROM roles r
 JOIN menus m ON m.code = 'admin_branding'
-WHERE r.name = 'ADMIN'
+WHERE r.name IN ('ADMIN', 'ROLE_ADMIN')
 ON CONFLICT DO NOTHING;

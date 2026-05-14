@@ -39,9 +39,18 @@ public class MenuService {
         if (authentication == null || !authentication.isAuthenticated()) {
             return List.of();
         }
+        // Match against both naming conventions: roles in this codebase
+        // are stored with the 'ROLE_' prefix in the DB (e.g. ROLE_ADMIN),
+        // but Spring Security authorities and admin-created roles may
+        // appear with or without it. Include both forms in the lookup
+        // set so we don't lose menus to a prefix mismatch.
         Set<String> roleNames = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .map(a -> a.startsWith("ROLE_") ? a.substring(5) : a)
+                .flatMap(a -> {
+                    String stripped = a.startsWith("ROLE_") ? a.substring(5) : a;
+                    String prefixed = a.startsWith("ROLE_") ? a : "ROLE_" + a;
+                    return java.util.stream.Stream.of(a, stripped, prefixed);
+                })
                 .collect(Collectors.toSet());
         if (roleNames.isEmpty()) {
             return List.of();

@@ -1,33 +1,61 @@
 (function () {
     'use strict';
     document.addEventListener('DOMContentLoaded', function () {
-        // Mobile sidebar drawer toggle.
+        // Sidebar toggle.
+        //  - On desktop (>= 992px): toggles a persistent "collapsed"
+        //    state on <body>, remembered in localStorage.
+        //  - On mobile (< 992px): toggles a transient drawer with an
+        //    overlay backdrop; clicking the overlay or pressing Escape
+        //    closes it.
         const sidebar = document.querySelector('[data-fms-sidebar]');
         const overlay = document.querySelector('[data-fms-sidebar-overlay]');
         const toggles = document.querySelectorAll('[data-fms-sidebar-toggle]');
-        function openSidebar() {
+        const STORAGE_KEY = 'fms-sidebar-collapsed';
+        const desktopMQ = window.matchMedia('(min-width: 992px)');
+
+        function isDesktop() { return desktopMQ.matches; }
+
+        function openMobile() {
             if (!sidebar) return;
             sidebar.classList.add('show');
             if (overlay) overlay.classList.add('show');
         }
-        function closeSidebar() {
+        function closeMobile() {
             if (!sidebar) return;
             sidebar.classList.remove('show');
             if (overlay) overlay.classList.remove('show');
         }
+
+        // Restore persisted desktop state on load.
+        if (localStorage.getItem(STORAGE_KEY) === '1') {
+            document.body.classList.add('sidebar-collapsed');
+        }
+
         toggles.forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                if (sidebar && sidebar.classList.contains('show')) {
-                    closeSidebar();
+                if (isDesktop()) {
+                    const nowCollapsed = document.body.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem(STORAGE_KEY, nowCollapsed ? '1' : '0');
                 } else {
-                    openSidebar();
+                    if (sidebar && sidebar.classList.contains('show')) {
+                        closeMobile();
+                    } else {
+                        openMobile();
+                    }
                 }
             });
         });
-        if (overlay) overlay.addEventListener('click', closeSidebar);
+
+        if (overlay) overlay.addEventListener('click', closeMobile);
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeSidebar();
+            if (e.key === 'Escape') closeMobile();
+        });
+
+        // When crossing the desktop breakpoint, drop the transient
+        // mobile state so the two modes don't fight each other.
+        desktopMQ.addEventListener('change', function () {
+            closeMobile();
         });
 
         document.querySelectorAll('table.sortable').forEach(function (t) {
