@@ -17,6 +17,8 @@ Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf u
 - ✅ **User & Role Administration** - CRUD pengguna, role, dan mapping role ↔ menu lewat UI
 - ✅ **Custom Branding** - Logo aplikasi bisa diganti admin tanpa redeploy
 - ✅ **SumoPod-style Sidebar** - Layout side-navigation kiri, bisa di-collapse di desktop
+- ✅ **Partner & supplier portals** - Bengkel rekanan dan penyedia spare part melihat WO yang di-assign, mengisi estimasi, dan notifikasi assignment
+- ✅ **External estimate approval** - Admin/manager/finance (sesuai pengaturan role) menyetujui estimasi eksternal; badge antrian di sidebar
 
 ## 🛠️ Tech Stack
 
@@ -60,8 +62,7 @@ Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf u
 
 4. **Access Application**
    - URL: http://localhost:8080
-   - Username: `admin`
-   - Password: `password123`
+   - The login page lists demo usernames (internal accounts plus **partner1** / **supplier1** for the partner workshop and parts-supplier portals). Password for all demo accounts: **password123**.
 
 ## 🗄️ Database Schema
 
@@ -71,9 +72,12 @@ Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf u
 - `workshops`, `mechanics` - Service providers
 - `spare_parts`, `inventory`, `inventory_locations` - Inventory management
 - `work_orders`, `work_order_items` - Work order processing
+- `user_workshops` - Links partner-portal users to a partner workshop
+- `work_order_supplier_users` - Assigns parts-supplier users to a work order
+- `app_settings` - Key/value settings (e.g. `ESTIMATE_APPROVER_ROLES` for external estimate approvers)
 - `invoices`, `payments` - Financial transactions
 
-**Total:** 20 tables dengan proper relationships dan indexes
+**Schema evolution:** See `src/main/resources/db/migration/` for the full Flyway history (V9 adds partner/supplier estimate approval workflow, roles, menus, and seed users).
 
 ## 👥 Default Users
 
@@ -84,6 +88,8 @@ Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf u
 | finance | password123 | FINANCE | Invoices & payments |
 | client1 | password123 | CLIENT | Own data only |
 | mechanic1 | password123 | MECHANIC | Assigned work orders |
+| partner1 | password123 | PARTNER_WORKSHOP | Partner portal (WO di workshop partner yang di-link ke user) |
+| supplier1 | password123 | PARTS_SUPPLIER | Supplier portal (WO yang di-assign sebagai penyedia spare part) |
 
 ## 🔄 Work Order Workflow
 
@@ -103,11 +109,15 @@ REQUESTED → ESTIMATED → APPROVED → IN_PROGRESS → COMPLETED → BILLED
 - `/invoices`, `/payments` — Invoicing & cashflow
 - `/clients`, `/workshops`, `/mechanics` — Master data (ADMIN / MANAGER)
 - `/reports` — Reporting (ADMIN / MANAGER / FINANCE)
+- `/partner/workorders` — Portal bengkel rekanan (PARTNER_WORKSHOP)
+- `/supplier/workorders` — Portal penyedia spare part (PARTS_SUPPLIER)
+- `/approvals/estimates` — Antrian persetujuan estimasi eksternal (ADMIN / MANAGER / FINANCE; siapa boleh approve juga diatur di Approval setup)
 
 ### Administration (ADMIN only)
 - `/admin/users` — User CRUD + role assignment + enable/disable
 - `/admin/roles` — Role CRUD + role ↔ menu mapping
 - `/admin/branding` — Upload logo aplikasi (PNG/JPG/SVG/WEBP/GIF/ICO, ≤2 MB)
+- `/admin/approval-settings` — CSV role Spring Security yang boleh approve estimasi eksternal (`ESTIMATE_APPROVER_ROLES`)
 
 ### Public utility
 - `/auth/login`, `/auth/logout` — Form-based login
@@ -232,7 +242,7 @@ fleet-maintenance-system/
 - **API:** JWT Bearer Token authentication
 - **Password:** BCrypt hashing
 - **CSRF:** Enabled for web, disabled for API
-- **Roles:** ADMIN, MANAGER, CLIENT, MECHANIC, FINANCE
+- **Roles:** ADMIN, MANAGER, CLIENT, MECHANIC, FINANCE, PARTNER_WORKSHOP (partner portal), PARTS_SUPPLIER (supplier portal)
 - **Dynamic menu visibility:** Sidebar items per user dihitung dari
   tabel `menus` × `role_menus`; admin bisa ubah mapping di
   `/admin/roles/{id}/edit` tanpa redeploy.
@@ -247,6 +257,7 @@ Project includes sample data:
 - 12 Spare Parts
 - 8 Work Orders (various statuses)
 - 4 Invoices
+- Flyway **V9** seeds `partner1` / `supplier1` (see **Default Users** above) and navigation entries for partner/supplier portals and estimate approvals
 
 ## 🐛 Troubleshooting
 

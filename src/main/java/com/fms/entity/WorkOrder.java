@@ -1,5 +1,6 @@
 package com.fms.entity;
 
+import com.fms.enums.EstimateApprovalStatus;
 import com.fms.enums.ExecutionType;
 import com.fms.enums.ServiceType;
 import com.fms.enums.WorkOrderStatus;
@@ -125,6 +126,26 @@ public class WorkOrder {
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estimate_approval_status", nullable = false, length = 30)
+    @Builder.Default
+    private EstimateApprovalStatus estimateApprovalStatus = EstimateApprovalStatus.NOT_REQUIRED;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estimate_submitted_by")
+    private User estimateSubmittedBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estimate_reviewed_by")
+    private User estimateReviewedBy;
+
+    @Column(name = "estimate_reviewed_at")
+    private LocalDateTime estimateReviewedAt;
+
+    /** Internal reviewer comment when approving or rejecting an external estimate. */
+    @Column(name = "estimate_approval_remark", columnDefinition = "TEXT")
+    private String estimateApprovalRemark;
+
     @Column(name = "customer_rating")
     private Integer customerRating;
 
@@ -142,6 +163,10 @@ public class WorkOrder {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
+
+    @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<WorkOrderSupplierUser> supplierUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

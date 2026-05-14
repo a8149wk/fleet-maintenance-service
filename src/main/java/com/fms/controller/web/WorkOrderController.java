@@ -3,7 +3,9 @@ package com.fms.controller.web;
 import com.fms.dto.workorder.CompletionRequest;
 import com.fms.dto.workorder.EstimationRequest;
 import com.fms.dto.workorder.WorkOrderCreateRequest;
+import com.fms.entity.User;
 import com.fms.entity.WorkOrder;
+import com.fms.entity.WorkOrderSupplierUser;
 import com.fms.enums.ExecutionType;
 import com.fms.enums.ServiceType;
 import com.fms.enums.WorkOrderStatus;
@@ -20,6 +22,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 @RequestMapping("/workorders")
 @RequiredArgsConstructor
@@ -32,6 +38,7 @@ public class WorkOrderController {
     private final SparePartService sparePartService;
     private final InvoiceService invoiceService;
     private final SecurityUtils securityUtils;
+    private final ApprovalSettingsService approvalSettingsService;
 
     @GetMapping
     public String list(@RequestParam(required = false) WorkOrderStatus status,
@@ -70,6 +77,15 @@ public class WorkOrderController {
         model.addAttribute("wo", wo);
         model.addAttribute("mechanics", mechanicService.findActive());
         model.addAttribute("invoice", invoiceService.findByWorkOrder(id).orElse(null));
+        User me = securityUtils.getCurrentUser();
+        model.addAttribute("canApproveExternalEstimate",
+                me != null && approvalSettingsService.userMayApproveExternalEstimates(me));
+        List<WorkOrderSupplierUser> supplierAssignments = workOrderService.listSupplierAssignments(id);
+        model.addAttribute("supplierAssignments", supplierAssignments);
+        model.addAttribute("supplierUserOptions", workOrderService.findActiveSupplierUsers());
+        model.addAttribute("supplierAssignedIds", supplierAssignments.stream()
+                .map(su -> su.getUser().getId())
+                .collect(Collectors.toSet()));
         return "workorder/detail";
     }
 
@@ -85,8 +101,37 @@ public class WorkOrderController {
     public String createEstimation(@PathVariable Long id,
                                    @ModelAttribute("estimation") EstimationRequest request,
                                    RedirectAttributes attrs) {
-        workOrderService.createEstimation(id, request);
+        workOrderService.createEstimation(id, request, securityUtils.getCurrentUser());
         attrs.addFlashAttribute("message", "Estimation submitted");
+        return "redirect:/workorders/" + id;
+    }
+
+    @PostMapping("/{id}/supplier-assign")
+    public String assignSuppliers(@PathVariable Long id,
+                                  @RequestParam(required = false) List<Long> supplierUserIds,
+                                  RedirectAttributes attrs) {
+        workOrderService.assignSupplierUsers(id,
+                supplierUserIds == null ? Collections.emptyList() : supplierUserIds,
+                securityUtils.getCurrentUser());
+        attrs.addFlashAttribute("message", "Penyedia spare part diperbarui");
+        return "redirect:/workorders/" + id;
+    }
+
+    @PostMapping("/{id}/approve-estimate")
+    public String approveEstimate(@PathVariable Long id,
+                                  @RequestParam(required = false) String notes,
+                                  RedirectAttributes attrs) {
+        workOrderService.approveEstimate(id, securityUtils.getCurrentUser(), notes);
+        attrs.addFlashAttribute("message", "Estimasi eksternal disetujui");
+        return "redirect:/workorders/" + id;
+    }
+
+    @PostMapping("/{id}/reject-estimate")
+    public String rejectEstimate(@PathVariable Long id,
+                                 @RequestParam String reason,
+                                 RedirectAttributes attrs) {
+        workOrderService.rejectEstimate(id, securityUtils.getCurrentUser(), reason);
+        attrs.addFlashAttribute("message", "Estimasi eksternal ditolak");
         return "redirect:/workorders/" + id;
     }
 

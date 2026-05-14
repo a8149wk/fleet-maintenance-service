@@ -46,6 +46,9 @@
                                           (item.path != '/' and #strings.startsWith(path, item.path)) ? 'active' : ''}">
                         <i th:class="${item.icon != null ? item.icon : 'fas fa-circle'}"></i>
                         <span th:text="${item.label}">Menu</span>
+                        <span th:if="${item.code == 'approvals_estimates' and pendingEstimateApprovalCount > 0}"
+                              class="badge rounded-pill bg-danger ms-auto sidebar-nav-badge"
+                              th:text="${pendingEstimateApprovalCount}">0</span>
                     </a>
                 </li>
             </ul>

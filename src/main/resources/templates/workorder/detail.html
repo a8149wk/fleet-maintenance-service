@@ -48,6 +48,16 @@
                         <dt class="col-sm-3">Estimated Cost</dt>
                         <dd class="col-sm-9"
                             th:text="${wo.estimatedCost != null ? 'Rp ' + #numbers.formatDecimal(wo.estimatedCost, 0, 'POINT', 0, 'POINT') : '-'}"></dd>
+                        <dt class="col-sm-3">External estimate</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge bg-secondary" th:text="${wo.estimateApprovalStatus}">NOT_REQUIRED</span>
+                            <span th:if="${wo.estimateSubmittedBy != null}" class="text-muted small ms-1"
+                                  th:text="|Submitted by ${wo.estimateSubmittedBy.fullName}|"></span>
+                            <span th:if="${wo.estimateReviewedBy != null}" class="d-block text-muted small"
+                                  th:text="|Reviewed by ${wo.estimateReviewedBy.fullName} — ${#temporals.format(wo.estimateReviewedAt, 'dd MMM yyyy HH:mm')}|"></span>
+                            <span th:if="${wo.estimateApprovalRemark != null}" class="d-block small"
+                                  th:text="${wo.estimateApprovalRemark}"></span>
+                        </dd>
                         <dt class="col-sm-3">Actual Cost</dt>
                         <dd class="col-sm-9"
                             th:text="${wo.actualCost != null ? 'Rp ' + #numbers.formatDecimal(wo.actualCost, 0, 'POINT', 0, 'POINT') : '-'}"></dd>
@@ -88,6 +98,28 @@
         </div>
 
         <div class="col-lg-4">
+            <div class="card shadow-sm mb-3" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                <div class="card-header bg-white"><h6 class="mb-0">Parts suppliers</h6></div>
+                <div class="card-body">
+                    <p class="text-muted small mb-2">Assign penyedia spare part yang boleh melihat WO ini dan mengisi estimasi.</p>
+                    <form th:action="@{/workorders/{id}/supplier-assign(id=${wo.id})}" method="post">
+                        <select name="supplierUserIds" class="form-select" multiple size="5">
+                            <option th:each="u : ${supplierUserOptions}"
+                                    th:value="${u.id}"
+                                    th:selected="${supplierAssignedIds.contains(u.id)}"
+                                    th:text="${u.fullName + ' (' + u.username + ')'}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm mt-2 w-100">
+                            <i class="fas fa-save"></i> Simpan assignment
+                        </button>
+                    </form>
+                    <ul class="list-unstyled small mt-3 mb-0" th:if="${!#lists.isEmpty(supplierAssignments)}">
+                        <li th:each="su : ${supplierAssignments}"
+                            th:text="${su.user.fullName + ' (' + su.user.username + ')'}"></li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="card shadow-sm mb-3">
                 <div class="card-header bg-white"><h6 class="mb-0">Actions</h6></div>
                 <div class="card-body d-grid gap-2">
@@ -95,17 +127,35 @@
                        th:href="@{/workorders/{id}/estimation(id=${wo.id})}" class="btn btn-outline-primary">
                         <i class="fas fa-calculator"></i> Create / Edit Estimation
                     </a>
-                    <form th:if="${wo.status.name() == 'ESTIMATED'}"
+                    <div th:if="${wo.status.name() == 'ESTIMATED' && wo.estimateApprovalStatus.name() == 'PENDING' && canApproveExternalEstimate}">
+                        <p class="small text-muted mb-2">Menunggu persetujuan estimasi dari bengkel rekanan / supplier.</p>
+                        <form th:action="@{/workorders/{id}/approve-estimate(id=${wo.id})}" method="post" class="d-grid gap-2">
+                            <input name="notes" class="form-control form-control-sm" placeholder="Catatan (opsional)"/>
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i> Setujui estimasi eksternal
+                            </button>
+                        </form>
+                        <form th:action="@{/workorders/{id}/reject-estimate(id=${wo.id})}" method="post" class="mt-2">
+                            <div class="input-group input-group-sm">
+                                <input name="reason" class="form-control" placeholder="Alasan penolakan" required/>
+                                <button type="submit" class="btn btn-outline-danger">Tolak estimasi</button>
+                            </div>
+                        </form>
+                        <a th:href="@{/approvals/estimates}" class="btn btn-link btn-sm px-0 mt-1">Buka antrian approval</a>
+                    </div>
+                    <form th:if="${wo.status.name() == 'ESTIMATED' && wo.estimateApprovalStatus.name() != 'PENDING'}"
                           th:action="@{/workorders/{id}/approve(id=${wo.id})}" method="post" class="d-grid">
                         <button class="btn btn-success" sec:authorize="hasAnyRole('ADMIN','MANAGER','CLIENT')">
-                            <i class="fas fa-check"></i> Approve
+                            <i class="fas fa-check"></i> Approve work order
                         </button>
                     </form>
-                    <form th:if="${wo.status.name() == 'ESTIMATED'}"
+                    <form th:if="${wo.status.name() == 'ESTIMATED' && wo.estimateApprovalStatus.name() != 'PENDING'}"
                           th:action="@{/workorders/{id}/reject(id=${wo.id})}" method="post">
                         <div class="input-group">
                             <input name="reason" class="form-control" placeholder="Rejection reason"/>
-                            <button class="btn btn-outline-danger"><i class="fas fa-times"></i> Reject</button>
+                            <button class="btn btn-outline-danger" sec:authorize="hasAnyRole('ADMIN','MANAGER','CLIENT')">
+                                <i class="fas fa-times"></i> Reject work order
+                            </button>
                         </div>
                     </form>
                     <form th:if="${wo.status.name() == 'APPROVED'}"

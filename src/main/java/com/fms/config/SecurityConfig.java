@@ -66,6 +66,11 @@ public class SecurityConfig {
                         // (revenue summary + invoice ledger).
                         .requestMatchers("/reports/**")
                             .hasAnyRole("ADMIN", "MANAGER", "FINANCE")
+                        .requestMatchers("/partner/**").hasRole("PARTNER_WORKSHOP")
+                        .requestMatchers("/supplier/**").hasRole("PARTS_SUPPLIER")
+                        .requestMatchers("/approvals/**").hasAnyRole("ADMIN", "MANAGER", "FINANCE")
+                        .requestMatchers("/workorders/**")
+                            .hasAnyRole("ADMIN", "MANAGER", "MECHANIC", "FINANCE", "CLIENT")
                         .requestMatchers("/workshops/**", "/clients/**", "/mechanics/**")
                             .hasAnyRole("ADMIN", "MANAGER")
                         .anyRequest().authenticated())

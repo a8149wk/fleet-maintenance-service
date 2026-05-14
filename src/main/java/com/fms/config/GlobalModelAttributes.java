@@ -1,8 +1,12 @@
 package com.fms.config;
 
 import com.fms.dto.menu.MenuView;
+import com.fms.entity.User;
+import com.fms.security.SecurityUtils;
+import com.fms.service.ApprovalSettingsService;
 import com.fms.service.BrandingService;
 import com.fms.service.MenuService;
+import com.fms.service.WorkOrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -23,6 +27,8 @@ import java.util.List;
  *       consumed by {@code layout/main.html}'s left sidebar.</li>
  *   <li>{@code logoUrl} — cache-busting URL of the active brand logo,
  *       used by the sidebar, login page, and favicon.</li>
+ *   <li>{@code pendingEstimateApprovalCount} — badge count for users who may approve
+ *       external estimates (see {@link ApprovalSettingsService}).</li>
  * </ul>
  *
  * Thymeleaf 3.1+ no longer exposes {@code #httpServletRequest} by
@@ -34,6 +40,9 @@ public class GlobalModelAttributes {
 
     private final MenuService menuService;
     private final BrandingService brandingService;
+    private final WorkOrderService workOrderService;
+    private final ApprovalSettingsService approvalSettingsService;
+    private final SecurityUtils securityUtils;
 
     @ModelAttribute("currentPath")
     public String currentPath(HttpServletRequest request) {
@@ -50,5 +59,18 @@ public class GlobalModelAttributes {
     @ModelAttribute("logoUrl")
     public String logoUrl() {
         return brandingService.getLogoUrl();
+    }
+
+    /**
+     * Count of work orders in ESTIMATED + PENDING external estimate approval.
+     * Shown as a sidebar badge for users who may act as approvers per {@link ApprovalSettingsService}.
+     */
+    @ModelAttribute("pendingEstimateApprovalCount")
+    public long pendingEstimateApprovalCount() {
+        User user = securityUtils.getCurrentUser();
+        if (user == null || !approvalSettingsService.userMayApproveExternalEstimates(user)) {
+            return 0L;
+        }
+        return workOrderService.countPendingEstimateApprovals();
     }
 }

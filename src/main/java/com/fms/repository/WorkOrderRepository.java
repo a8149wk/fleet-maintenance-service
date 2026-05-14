@@ -1,6 +1,7 @@
 package com.fms.repository;
 
 import com.fms.entity.WorkOrder;
+import com.fms.enums.EstimateApprovalStatus;
 import com.fms.enums.WorkOrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,4 +61,29 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
             "ORDER BY w.createdAt DESC",
             countQuery = "SELECT COUNT(w) FROM WorkOrder w")
     Page<WorkOrder> findRecent(Pageable pageable);
+
+    long countByStatusAndEstimateApprovalStatus(WorkOrderStatus status, EstimateApprovalStatus estimateApproval);
+
+    @Query("SELECT DISTINCT w FROM WorkOrder w " +
+            "LEFT JOIN FETCH w.vehicle v " +
+            "LEFT JOIN FETCH w.client c " +
+            "LEFT JOIN FETCH w.workshop ws " +
+            "WHERE w.workshop IS NOT NULL AND EXISTS (" +
+            "  SELECT 1 FROM UserWorkshop uw WHERE uw.user.id = :userId AND uw.workshop.id = w.workshop.id" +
+            ") ORDER BY w.createdAt DESC")
+    Page<WorkOrder> findVisibleForPartner(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT DISTINCT w FROM WorkOrder w " +
+            "LEFT JOIN FETCH w.vehicle v " +
+            "LEFT JOIN FETCH w.client c " +
+            "LEFT JOIN FETCH w.workshop ws " +
+            "WHERE EXISTS (" +
+            "  SELECT 1 FROM WorkOrderSupplierUser su WHERE su.workOrder.id = w.id AND su.user.id = :userId" +
+            ") ORDER BY w.createdAt DESC")
+    Page<WorkOrder> findVisibleForSupplier(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT w FROM WorkOrder w WHERE w.status = :st AND w.estimateApprovalStatus = :eas ORDER BY w.createdAt ASC")
+    Page<WorkOrder> findPendingEstimateApprovals(@Param("st") WorkOrderStatus st,
+                                                @Param("eas") EstimateApprovalStatus eas,
+                                                Pageable pageable);
 }

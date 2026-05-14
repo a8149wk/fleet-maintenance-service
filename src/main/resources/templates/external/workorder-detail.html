@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${wo.workOrderNumber}">WO</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">
+            <span th:text="${wo.workOrderNumber}">WO-0001</span>
+            <span class="badge ms-2"
+                  th:classappend="${wo.status.name() == 'COMPLETED' ? 'bg-success' :
+                                       wo.status.name() == 'IN_PROGRESS' ? 'bg-info' :
+                                       wo.status.name() == 'APPROVED' ? 'bg-primary' :
+                                       wo.status.name() == 'REJECTED' ? 'bg-danger' :
+                                       wo.status.name() == 'CANCELLED' ? 'bg-secondary' :
+                                       wo.status.name() == 'BILLED' ? 'bg-dark' : 'bg-warning'}"
+                  th:text="${wo.status}"></span>
+        </h2>
+        <a th:href="@{/__${portalPrefix}__/workorders}" class="btn btn-light">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white"><h6 class="mb-0">Ringkasan</h6></div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Vehicle</dt>
+                        <dd class="col-sm-9" th:text="${wo.vehicle.licensePlate + ' - ' + wo.vehicle.brand + ' ' + wo.vehicle.model}"></dd>
+                        <dt class="col-sm-3">Client</dt>
+                        <dd class="col-sm-9" th:text="${wo.client.name}"></dd>
+                        <dt class="col-sm-3">Workshop</dt>
+                        <dd class="col-sm-9" th:text="${wo.workshop != null ? wo.workshop.name : '-'}"></dd>
+                        <dt class="col-sm-3">Service Type</dt>
+                        <dd class="col-sm-9" th:text="${wo.serviceType}"></dd>
+                        <dt class="col-sm-3">Execution</dt>
+                        <dd class="col-sm-9" th:text="${wo.executionType}"></dd>
+                        <dt class="col-sm-3">Description</dt>
+                        <dd class="col-sm-9" th:text="${wo.requestDescription}"></dd>
+                        <dt class="col-sm-3">Diagnosis</dt>
+                        <dd class="col-sm-9" th:text="${wo.diagnosis ?: '-'}"></dd>
+                        <dt class="col-sm-3">Estimated Cost</dt>
+                        <dd class="col-sm-9"
+                            th:text="${wo.estimatedCost != null ? 'Rp ' + #numbers.formatDecimal(wo.estimatedCost, 0, 'POINT', 0, 'POINT') : '-'}"></dd>
+                        <dt class="col-sm-3">Status estimasi</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge bg-secondary" th:text="${wo.estimateApprovalStatus}">NOT_REQUIRED</span>
+                            <span th:if="${wo.estimateApprovalStatus.name() == 'PENDING'}" class="text-muted small ms-1">
+                                Menunggu persetujuan internal
+                            </span>
+                            <span th:if="${wo.estimateApprovalStatus.name() == 'REJECTED'}" class="text-danger small ms-1 d-block"
+                                  th:text="${wo.estimateApprovalRemark != null ? wo.estimateApprovalRemark : 'Silakan perbaiki dan kirim ulang estimasi.'}"></span>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3" th:if="${!#lists.isEmpty(wo.items)}">
+                <div class="card-header bg-white"><h6 class="mb-0">Items</h6></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Type</th><th>Item</th><th>Qty</th>
+                            <th class="text-end">Unit</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="it : ${wo.items}">
+                            <td th:text="${it.itemType}"></td>
+                            <td th:text="${it.sparePart != null ? it.sparePart.name : it.serviceName}"></td>
+                            <td th:text="${it.quantity}"></td>
+                            <td class="text-end"
+                                th:text="${'Rp ' + #numbers.formatDecimal(it.unitPrice, 0, 'POINT', 0, 'POINT')}"></td>
+                            <td class="text-end"
+                                th:text="${'Rp ' + #numbers.formatDecimal(it.subtotal, 0, 'POINT', 0, 'POINT')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white"><h6 class="mb-0">Aksi</h6></div>
+                <div class="card-body d-grid gap-2">
+                    <a th:if="${wo.status.name() == 'REQUESTED' || wo.status.name() == 'ESTIMATED'}"
+                       th:href="@{/__${portalPrefix}__/workorders/{id}/estimation(id=${wo.id})}"
+                       class="btn btn-outline-primary">
+                        <i class="fas fa-calculator"></i> Input / ubah estimasi biaya
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
