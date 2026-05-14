@@ -20,7 +20,10 @@ public class SparePartService {
 
     @Transactional(readOnly = true)
     public Page<SparePart> search(String category, String search, Pageable pageable) {
-        return sparePartRepository.search(category, search, pageable);
+        return sparePartRepository.search(
+                category == null ? "" : category,
+                search == null ? "" : search,
+                pageable);
     }
 
     @Transactional(readOnly = true)

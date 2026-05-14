@@ -20,7 +20,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public Page<Client> search(String search, Pageable pageable) {
-        return clientRepository.search(search, pageable);
+        return clientRepository.search(search == null ? "" : search, pageable);
     }
 
     @Transactional(readOnly = true)

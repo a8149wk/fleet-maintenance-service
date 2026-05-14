@@ -42,7 +42,7 @@ public class WorkOrderService {
 
     @Transactional(readOnly = true)
     public Page<WorkOrder> search(WorkOrderStatus status, Long clientId, String search, Pageable pageable) {
-        return workOrderRepository.search(status, clientId, search, pageable);
+        return workOrderRepository.search(status, clientId, search == null ? "" : search, pageable);
     }
 
     @Transactional(readOnly = true)

@@ -20,7 +20,7 @@ public class MechanicService {
 
     @Transactional(readOnly = true)
     public Page<Mechanic> search(Long workshopId, String search, Pageable pageable) {
-        return mechanicRepository.search(workshopId, search, pageable);
+        return mechanicRepository.search(workshopId, search == null ? "" : search, pageable);
     }
 
     @Transactional(readOnly = true)

@@ -35,7 +35,7 @@ public class InventoryService {
 
     @Transactional(readOnly = true)
     public Page<Inventory> search(Long locationId, String search, Pageable pageable) {
-        return inventoryRepository.search(locationId, search, pageable);
+        return inventoryRepository.search(locationId, search == null ? "" : search, pageable);
     }
 
     @Transactional(readOnly = true)

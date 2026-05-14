@@ -41,7 +41,7 @@ public class InvoiceService {
 
     @Transactional(readOnly = true)
     public Page<Invoice> search(InvoiceStatus status, Long clientId, String search, Pageable pageable) {
-        return invoiceRepository.search(status, clientId, search, pageable);
+        return invoiceRepository.search(status, clientId, search == null ? "" : search, pageable);
     }
 
     @Transactional(readOnly = true)

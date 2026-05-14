@@ -23,8 +23,8 @@ public interface SparePartRepository extends JpaRepository<SparePart, Long> {
     Page<SparePart> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     @Query("SELECT p FROM SparePart p WHERE " +
-            "(:category IS NULL OR p.category = :category) AND " +
-            "(:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "(:category = '' OR p.category = :category) AND " +
+            "(:search = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(p.partNumber) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<SparePart> search(@Param("category") String category, @Param("search") String search, Pageable pageable);
 }

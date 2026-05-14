@@ -20,7 +20,7 @@ public class VehicleService {
 
     @Transactional(readOnly = true)
     public Page<Vehicle> search(Long clientId, String search, Pageable pageable) {
-        return vehicleRepository.search(clientId, search, pageable);
+        return vehicleRepository.search(clientId, search == null ? "" : search, pageable);
     }
 
     @Transactional(readOnly = true)

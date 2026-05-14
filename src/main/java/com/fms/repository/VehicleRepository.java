@@ -24,7 +24,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     @Query("SELECT v FROM Vehicle v WHERE " +
             "(:clientId IS NULL OR v.client.id = :clientId) AND " +
-            "(:search IS NULL OR LOWER(v.licensePlate) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "(:search = '' OR LOWER(v.licensePlate) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(v.brand) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(v.model) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Vehicle> search(@Param("clientId") Long clientId, @Param("search") String search, Pageable pageable);

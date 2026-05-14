@@ -25,7 +25,7 @@ public interface WorkshopRepository extends JpaRepository<Workshop, Long> {
 
     @Query("SELECT w FROM Workshop w WHERE " +
             "(:type IS NULL OR w.type = :type) AND " +
-            "(:search IS NULL OR LOWER(w.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "(:search = '' OR LOWER(w.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(w.city) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Workshop> search(@Param("type") WorkshopType type, @Param("search") String search, Pageable pageable);
 }

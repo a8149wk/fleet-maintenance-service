@@ -23,7 +23,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     List<Client> findByIsActiveTrue();
 
     @Query("SELECT c FROM Client c WHERE " +
-            "(:search IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "(:search = '' OR LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(c.code) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Client> search(@Param("search") String search, Pageable pageable);
 }

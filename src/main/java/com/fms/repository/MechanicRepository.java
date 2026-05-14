@@ -24,7 +24,7 @@ public interface MechanicRepository extends JpaRepository<Mechanic, Long> {
 
     @Query("SELECT m FROM Mechanic m WHERE " +
             "(:workshopId IS NULL OR m.workshop.id = :workshopId) AND " +
-            "(:search IS NULL OR LOWER(m.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "(:search = '' OR LOWER(m.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(m.code) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Mechanic> search(@Param("workshopId") Long workshopId, @Param("search") String search, Pageable pageable);
 }

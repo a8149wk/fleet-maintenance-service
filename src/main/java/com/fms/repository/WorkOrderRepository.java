@@ -20,12 +20,20 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 
     Page<WorkOrder> findByStatus(WorkOrderStatus status, Pageable pageable);
 
-    @Query("SELECT w FROM WorkOrder w WHERE " +
-            "(:status IS NULL OR w.status = :status) AND " +
+    @Query(value = "SELECT DISTINCT w FROM WorkOrder w " +
+            "LEFT JOIN FETCH w.vehicle " +
+            "LEFT JOIN FETCH w.client " +
+            "WHERE (:status IS NULL OR w.status = :status) AND " +
             "(:clientId IS NULL OR w.client.id = :clientId) AND " +
-            "(:search IS NULL OR LOWER(w.workOrderNumber) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "(:search = '' OR LOWER(w.workOrderNumber) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(w.vehicle.licensePlate) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(w.client.name) LIKE LOWER(CONCAT('%', :search, '%')))")
+            "OR LOWER(w.client.name) LIKE LOWER(CONCAT('%', :search, '%')))",
+            countQuery = "SELECT COUNT(w) FROM WorkOrder w WHERE " +
+                    "(:status IS NULL OR w.status = :status) AND " +
+                    "(:clientId IS NULL OR w.client.id = :clientId) AND " +
+                    "(:search = '' OR LOWER(w.workOrderNumber) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR LOWER(w.vehicle.licensePlate) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR LOWER(w.client.name) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<WorkOrder> search(@Param("status") WorkOrderStatus status,
                            @Param("clientId") Long clientId,
                            @Param("search") String search,
@@ -46,6 +54,10 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
     List<WorkOrder> findByDateRange(@Param("startDate") LocalDateTime startDate,
                                     @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT w FROM WorkOrder w ORDER BY w.createdAt DESC")
+    @Query(value = "SELECT w FROM WorkOrder w " +
+            "LEFT JOIN FETCH w.vehicle " +
+            "LEFT JOIN FETCH w.client " +
+            "ORDER BY w.createdAt DESC",
+            countQuery = "SELECT COUNT(w) FROM WorkOrder w")
     Page<WorkOrder> findRecent(Pageable pageable);
 }

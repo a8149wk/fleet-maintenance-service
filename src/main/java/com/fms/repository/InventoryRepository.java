@@ -25,7 +25,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
     @Query("SELECT i FROM Inventory i WHERE " +
             "(:locationId IS NULL OR i.location.id = :locationId) AND " +
-            "(:search IS NULL OR LOWER(i.sparePart.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "(:search = '' OR LOWER(i.sparePart.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(i.sparePart.partNumber) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Inventory> search(@Param("locationId") Long locationId,
                            @Param("search") String search,

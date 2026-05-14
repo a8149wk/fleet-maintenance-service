@@ -21,7 +21,7 @@ public class WorkshopService {
 
     @Transactional(readOnly = true)
     public Page<Workshop> search(WorkshopType type, String search, Pageable pageable) {
-        return workshopRepository.search(type, search, pageable);
+        return workshopRepository.search(type, search == null ? "" : search, pageable);
     }
 
     @Transactional(readOnly = true)
