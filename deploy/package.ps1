@@ -57,11 +57,12 @@ try {
     New-Item -ItemType Directory -Path (Join-Path $stage 'config') -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $stage 'logs')   -Force | Out-Null
 
-    Copy-Item -Path $jar.FullName                      -Destination $stage -Force
-    Copy-Item -Path (Join-Path $DeployDir 'config\*')  -Destination (Join-Path $stage 'config') -Recurse -Force
-    Copy-Item -Path (Join-Path $DeployDir 'run.bat')   -Destination $stage -Force
-    Copy-Item -Path (Join-Path $DeployDir 'run.sh')    -Destination $stage -Force
-    Copy-Item -Path (Join-Path $DeployDir 'README.md') -Destination $stage -Force
+    Copy-Item -Path $jar.FullName                                 -Destination $stage -Force
+    Copy-Item -Path (Join-Path $DeployDir 'config\*')             -Destination (Join-Path $stage 'config') -Recurse -Force
+    Copy-Item -Path (Join-Path $DeployDir 'run.bat')              -Destination $stage -Force
+    Copy-Item -Path (Join-Path $DeployDir 'run.sh')               -Destination $stage -Force
+    Copy-Item -Path (Join-Path $DeployDir 'ecosystem.config.js')  -Destination $stage -Force
+    Copy-Item -Path (Join-Path $DeployDir 'README.md')            -Destination $stage -Force
 
     if (-not $NoZip) {
         $zip = Join-Path $DistRoot "fleet-maintenance-$version.zip"

@@ -12,8 +12,9 @@ deploy/
 ├── config/
 │   ├── database.properties   # DB connection + JPA/Flyway/JWT
 │   └── logging.properties    # Log file path, rotation, verbosity
-├── run.bat                   # Windows launcher
-├── run.sh                    # Linux/macOS launcher
+├── run.bat                   # Windows launcher (foreground)
+├── run.sh                    # Linux/macOS launcher (foreground)
+├── ecosystem.config.js       # PM2 process descriptor (background)
 ├── package.ps1               # Build & assemble the distribution
 ├── package.sh                # Build & assemble the distribution (bash)
 └── README.md                 # This file
@@ -45,9 +46,10 @@ dist/fleet-maintenance-1.0.0/
 ├── config/
 │   ├── database.properties
 │   └── logging.properties
-├── run.bat
-├── run.sh
-├── logs/                     # (created on first run)
+├── run.bat                  # foreground launcher
+├── run.sh                   # foreground launcher
+├── ecosystem.config.js      # PM2 descriptor (background)
+├── logs/                    # (created on first run)
 └── README.md
 ```
 
@@ -66,6 +68,83 @@ You can copy / zip this whole folder to the target server.
 
 The app listens on **http://localhost:8080** by default. Override with
 `server.port=...` in `database.properties` or by editing the launcher.
+
+## Running with PM2 (background / daemonized)
+
+`run.bat` / `run.sh` run the JVM in the foreground. For a long-running
+deployment use [PM2](https://pm2.keymetrics.io/), which keeps the
+process up, restarts it on crash, and (optionally) auto-starts on boot.
+
+### Install once on the target host
+
+```bash
+# Linux / macOS — needs Node.js 18+
+npm install -g pm2
+```
+
+```powershell
+# Windows — needs Node.js 18+ from https://nodejs.org/
+npm install -g pm2
+npm install -g pm2-windows-startup   # only if you want boot persistence
+```
+
+### Start the service
+
+```bash
+cd /path/to/fleet-maintenance-1.0.0
+pm2 start ecosystem.config.js     # auto-detects the JAR sibling file
+pm2 save                          # persist current process list
+```
+
+`ecosystem.config.js` already:
+
+-   names the app **fleet-maintenance**
+-   sets `cwd` to the folder it lives in, so Spring Boot finds
+    `./config/database.properties` and `./config/logging.properties`
+-   launches the JVM with `-Xms256m -Xmx1024m` (override by exporting
+    `JAVA_OPTS` before `pm2 start`)
+-   captures JVM stdout/stderr into `./logs/pm2-stdout.log` and
+    `./logs/pm2-stderr.log` (the structured application log still goes
+    to wherever `logging.file.name` points)
+-   auto-restarts on crash and recycles the JVM if RSS exceeds 1.5 GB
+
+### Day-to-day commands
+
+```bash
+pm2 status                        # is it running?
+pm2 logs fleet-maintenance        # tail JVM stdout/stderr
+pm2 logs fleet-maintenance --lines 200
+pm2 monit                         # interactive dashboard
+pm2 reload  fleet-maintenance     # zero-downtime restart
+pm2 restart fleet-maintenance     # hard restart
+pm2 stop    fleet-maintenance
+pm2 delete  fleet-maintenance     # remove from PM2 list
+```
+
+### Auto-start on system boot
+
+```bash
+# Linux (run as the user that owns the PM2 daemon)
+pm2 startup systemd               # PM2 prints a sudo command — run it
+pm2 save
+```
+
+```powershell
+# Windows
+pm2-startup install
+pm2 save
+```
+
+### Custom JVM options
+
+```bash
+JAVA_OPTS="-Xms512m -Xmx2048m -Dfile.encoding=UTF-8" pm2 start ecosystem.config.js
+```
+
+```powershell
+$env:JAVA_OPTS = "-Xms512m -Xmx2048m -Dfile.encoding=UTF-8"
+pm2 start ecosystem.config.js
+```
 
 ## How external configuration works
 

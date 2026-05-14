@@ -50,6 +50,7 @@ cp "$JAR" "$STAGE/"
 cp -R "$DEPLOY_DIR/config/." "$STAGE/config/"
 cp "$DEPLOY_DIR/run.bat" "$STAGE/"
 cp "$DEPLOY_DIR/run.sh"  "$STAGE/"
+cp "$DEPLOY_DIR/ecosystem.config.js" "$STAGE/"
 cp "$DEPLOY_DIR/README.md" "$STAGE/"
 chmod +x "$STAGE/run.sh"
 
