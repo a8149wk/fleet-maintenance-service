@@ -12,6 +12,8 @@ deploy/
 ├── config/
 │   ├── database.properties   # DB connection + JPA/Flyway/JWT
 │   └── logging.properties    # Log file path, rotation, verbosity
+├── nginx/
+│   └── fleetmaintsvc.conf    # Sample Nginx vhost (reverse proxy + HTTPS)
 ├── run.bat                   # Windows launcher (foreground)
 ├── run.sh                    # Linux/macOS launcher (foreground)
 ├── ecosystem.config.js       # PM2 process descriptor (background)
@@ -46,6 +48,8 @@ dist/fleet-maintenance-1.0.0/
 ├── config/
 │   ├── database.properties
 │   └── logging.properties
+├── nginx-sample/
+│   └── fleetmaintsvc.conf   # copy to /etc/nginx/conf.d/
 ├── run.bat                  # foreground launcher
 ├── run.sh                   # foreground launcher
 ├── ecosystem.config.js      # PM2 descriptor (background)
@@ -145,6 +149,83 @@ JAVA_OPTS="-Xms512m -Xmx2048m -Dfile.encoding=UTF-8" pm2 start ecosystem.config.
 $env:JAVA_OPTS = "-Xms512m -Xmx2048m -Dfile.encoding=UTF-8"
 pm2 start ecosystem.config.js
 ```
+
+## Exposing the service on a public domain (Nginx + HTTPS)
+
+The application binds to `127.0.0.1:8080`. To put it behind a real
+domain like `fleetmaintsvc.my.id` with HTTPS, terminate TLS in Nginx
+and reverse-proxy to localhost. A working vhost template ships in
+`nginx-sample/fleetmaintsvc.conf`.
+
+### 1. Point DNS
+
+At your domain registrar add two A records (apex + `www`) targeting
+the server's public IP. Verify with:
+
+```bash
+dig +short fleetmaintsvc.my.id
+```
+
+### 2. Open the firewall
+
+```bash
+# Server-side (firewalld)
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
+```
+
+Plus the cloud provider's security group: allow inbound TCP 80 and
+443 from `0.0.0.0/0`. Leave 8080 **closed** to the public — clients
+should only reach the app through Nginx.
+
+### 3. Install Nginx and drop in the vhost
+
+```bash
+dnf install -y nginx
+systemctl enable --now nginx
+
+# Edit `server_name` inside the file if your domain differs.
+cp ./nginx-sample/fleetmaintsvc.conf /etc/nginx/conf.d/
+
+nginx -t && systemctl reload nginx
+curl -I http://fleetmaintsvc.my.id/auth/login    # expect 200 OK
+```
+
+The vhost already forwards `Host`, `X-Real-IP`, `X-Forwarded-For`,
+`X-Forwarded-Proto`, `X-Forwarded-Host`, and `X-Forwarded-Port`.
+Spring Boot honors them via `server.forward-headers-strategy=framework`
+(default in the bundled `application.properties`), so login redirects,
+CSRF same-origin checks, and the cookie `Secure` flag will see the
+public scheme/host instead of the internal `:8080`.
+
+### 4. Issue a TLS certificate with Let's Encrypt
+
+```bash
+dnf install -y certbot python3-certbot-nginx
+
+certbot --nginx \
+    -d fleetmaintsvc.my.id -d www.fleetmaintsvc.my.id \
+    --agree-tos --redirect -m you@example.com --non-interactive
+```
+
+certbot rewrites the vhost in place to add the `listen 443 ssl` block
+and an HTTP→HTTPS redirect, then reloads Nginx. Auto-renewal runs from
+the systemd timer:
+
+```bash
+systemctl status certbot-renew.timer
+certbot renew --dry-run
+```
+
+### 5. Smoke-test the public URL
+
+```bash
+curl -I http://fleetmaintsvc.my.id              # should redirect to https
+curl -I https://fleetmaintsvc.my.id/auth/login  # 200 OK on the login page
+```
+
+Open `https://fleetmaintsvc.my.id` in a browser and sign in.
 
 ## How external configuration works
 
