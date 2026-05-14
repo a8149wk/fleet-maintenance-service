@@ -32,6 +32,10 @@ buildNumber.properties
 application-local.properties
 application-prod.properties
 
+# Runtime external config (matches spring.config.import in application.properties).
+# Contains DB credentials and log paths — never commit.
+/config/
+
 # Internal/spec docs - kept locally for reference only, not pushed to GitHub.
 # (README.md is the public entrypoint and IS tracked.)
 CURSOR_INSTRUCTIONS.md

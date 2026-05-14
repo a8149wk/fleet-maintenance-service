@@ -60,8 +60,13 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**",
                                 "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/invoices/**", "/payments/**").hasAnyRole("ADMIN", "MANAGER", "FINANCE")
-                        .requestMatchers("/workshops/**", "/clients/**", "/mechanics/**", "/reports/**")
+                        .requestMatchers("/invoices/**", "/payments/**")
+                            .hasAnyRole("ADMIN", "MANAGER", "FINANCE")
+                        // FINANCE keeps access to the financial reports
+                        // (revenue summary + invoice ledger).
+                        .requestMatchers("/reports/**")
+                            .hasAnyRole("ADMIN", "MANAGER", "FINANCE")
+                        .requestMatchers("/workshops/**", "/clients/**", "/mechanics/**")
                             .hasAnyRole("ADMIN", "MANAGER")
                         .anyRequest().authenticated())
                 .formLogin(form -> form

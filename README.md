@@ -13,6 +13,10 @@ Sistem manajemen pemeliharaan kendaraan fleet berbasis Spring Boot + Thymeleaf u
 - ✅ **Client Portal** - Portal untuk client monitor kendaraan
 - ✅ **REST API** - API untuk mobile app (JWT authentication)
 - ✅ **Reporting** - PDF & Excel reports untuk bisnis
+- ✅ **Swagger / OpenAPI Sandbox** - Try-it-out playground untuk seluruh `/api/**`
+- ✅ **User & Role Administration** - CRUD pengguna, role, dan mapping role ↔ menu lewat UI
+- ✅ **Custom Branding** - Logo aplikasi bisa diganti admin tanpa redeploy
+- ✅ **SumoPod-style Sidebar** - Layout side-navigation kiri, bisa di-collapse di desktop
 
 ## 🛠️ Tech Stack
 
@@ -89,14 +93,29 @@ REQUESTED → ESTIMATED → APPROVED → IN_PROGRESS → COMPLETED → BILLED
  CANCELLED   REJECTED   CANCELLED
 ```
 
-## 🌐 API Endpoints
+## 🌐 URL Map
 
 ### Web Application
-- `/` - Dashboard
-- `/workorders` - Work order management
-- `/vehicles` - Vehicle management
-- `/inventory` - Inventory management
-- `/invoices` - Invoice & payment
+- `/` — Dashboard
+- `/workorders` — Work order management
+- `/vehicles` — Vehicle management
+- `/inventory` — Inventory management
+- `/invoices`, `/payments` — Invoicing & cashflow
+- `/clients`, `/workshops`, `/mechanics` — Master data (ADMIN / MANAGER)
+- `/reports` — Reporting (ADMIN / MANAGER / FINANCE)
+
+### Administration (ADMIN only)
+- `/admin/users` — User CRUD + role assignment + enable/disable
+- `/admin/roles` — Role CRUD + role ↔ menu mapping
+- `/admin/branding` — Upload logo aplikasi (PNG/JPG/SVG/WEBP/GIF/ICO, ≤2 MB)
+
+### Public utility
+- `/auth/login`, `/auth/logout` — Form-based login
+- `/branding/logo` — Stream logo aktif (anonymous-readable, dipakai login page)
+
+### Swagger / OpenAPI
+- `/swagger-ui.html` — Interactive playground (redirects ke `/swagger-ui/index.html`)
+- `/v3/api-docs` — OpenAPI 3 JSON
 
 ### Mobile REST API
 
@@ -119,21 +138,57 @@ GET  /api/mobile/inventory
 POST /api/mobile/inventory/check-availability
 ```
 
+Daftar lengkap & try-it-out tersedia langsung di Swagger UI.
+
 ## 📦 Build Commands
 
 ```bash
-# Development
-mvn spring-boot:run
+# Development (H2 in-memory, no Flyway, schema dibuat Hibernate)
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
-# Production build
+# Production build (executable JAR, embedded Tomcat)
 mvn clean package -DskipTests
 
-# Run JAR
+# Run JAR (pakai application.properties default - PostgreSQL)
 java -jar target/fleet-maintenance-system-1.0.0.jar
+
+# Override DB via env (atau pakai config/database.properties — lihat di bawah)
+DB_USERNAME=postgres DB_PASSWORD=secret \
+  java -jar target/fleet-maintenance-system-1.0.0.jar
 
 # Run tests
 mvn test
 ```
+
+### Externalized configuration
+
+`application.properties` mengimpor 2 file opsional dari working directory:
+
+```
+./config/database.properties
+./config/logging.properties
+```
+
+Untuk membuat config production yang persisten, salin template dari
+`deploy/config/*.properties` ke `./config/` dan isi nilainya.
+File `config/` di-gitignore — kredensial tidak akan ikut commit.
+
+### Deployment package
+
+```powershell
+# Windows
+.\deploy\package.ps1
+```
+```bash
+# Linux / macOS
+./deploy/package.sh
+```
+
+Menghasilkan:
+- `dist/fleet-maintenance-1.0.0/` — folder berisi JAR + config template + scripts
+- `dist/fleet-maintenance-1.0.0.zip` — siap di-`scp` ke server
+
+Detail deploy via PM2 + Nginx + Let's Encrypt: lihat **[deploy/README.md](deploy/README.md)**.
 
 ## 🧪 Testing API
 
@@ -178,6 +233,9 @@ fleet-maintenance-system/
 - **Password:** BCrypt hashing
 - **CSRF:** Enabled for web, disabled for API
 - **Roles:** ADMIN, MANAGER, CLIENT, MECHANIC, FINANCE
+- **Dynamic menu visibility:** Sidebar items per user dihitung dari
+  tabel `menus` × `role_menus`; admin bisa ubah mapping di
+  `/admin/roles/{id}/edit` tanpa redeploy.
 
 ## 📊 Sample Data
 
