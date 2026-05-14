@@ -7,7 +7,7 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <h2 class="mb-3"><i class="fas fa-car text-primary"></i>
+    <h2 class="mb-3">
         <span th:text="${vehicle.id == null} ? 'New Vehicle' : 'Edit Vehicle'"></span></h2>
     <form th:action="${vehicle.id == null} ? @{/vehicles} : @{/vehicles/{id}(id=${vehicle.id})}"
           th:object="${vehicle}" method="post" class="card card-body shadow-sm">
