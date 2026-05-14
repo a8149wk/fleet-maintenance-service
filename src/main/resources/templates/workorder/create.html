@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>New Work Order</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-3"><i class="fas fa-plus-square text-primary"></i> New Work Order</h2>
+    <form th:action="@{/workorders}" th:object="${workOrder}" method="post" class="card card-body shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Vehicle <span class="text-danger">*</span></label>
+                <select th:field="*{vehicleId}" class="form-select" required>
+                    <option value="">-- Select Vehicle --</option>
+                    <option th:each="v : ${vehicles}" th:value="${v.id}"
+                            th:text="${v.licensePlate + ' - ' + v.brand + ' ' + v.model + ' (' + v.client.name + ')'}"></option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Workshop</label>
+                <select th:field="*{workshopId}" class="form-select">
+                    <option value="">-- Select Workshop --</option>
+                    <option th:each="w : ${workshops}" th:value="${w.id}"
+                            th:text="${w.name + ' (' + w.type + ')'}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Service Type <span class="text-danger">*</span></label>
+                <select th:field="*{serviceType}" class="form-select" required>
+                    <option th:each="s : ${serviceTypes}" th:value="${s}" th:text="${s}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Execution Type <span class="text-danger">*</span></label>
+                <select th:field="*{executionType}" class="form-select" required>
+                    <option th:each="e : ${executionTypes}" th:value="${e}" th:text="${e}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Current Odometer</label>
+                <input type="number" th:field="*{currentOdometer}" class="form-control" min="0"/>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Description <span class="text-danger">*</span></label>
+                <textarea th:field="*{requestDescription}" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input type="checkbox" th:field="*{isUrgent}" class="form-check-input"/>
+                    <label class="form-check-label">Mark as Urgent</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" th:field="*{isWarranty}" class="form-check-input"/>
+                    <label class="form-check-label">Warranty Service</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Warranty Reference</label>
+                <input type="text" th:field="*{warrantyReference}" class="form-control"/>
+            </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Save</button>
+            <a th:href="@{/workorders}" class="btn btn-light">Cancel</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>

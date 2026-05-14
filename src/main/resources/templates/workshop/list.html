@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Workshops</title></head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-tools text-primary"></i> Workshops</h2>
+        <a th:href="@{/workshops/create}" class="btn btn-primary"><i class="fas fa-plus"></i> New Workshop</a>
+    </div>
+    <form th:action="@{/workshops}" method="get" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Type</label>
+                <select name="type" class="form-select">
+                    <option value="">All</option>
+                    <option th:each="t : ${types}" th:value="${t}" th:text="${t}"
+                            th:selected="${t.name() == param.type}"></option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" th:value="${param.search}"
+                       placeholder="Name or city"/>
+            </div>
+            <div class="col-md-2"><button class="btn btn-primary w-100">Filter</button></div>
+        </div>
+    </form>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr><th>Code</th><th>Name</th><th>Type</th><th>City</th><th>Rating</th><th>Contact</th></tr>
+                </thead>
+                <tbody>
+                <tr th:if="${workshops.empty}">
+                    <td colspan="6" class="text-center text-muted py-4">No workshops</td>
+                </tr>
+                <tr th:each="w : ${workshops.content}">
+                    <td th:text="${w.code}"></td>
+                    <td><a th:href="@{/workshops/{id}(id=${w.id})}" th:text="${w.name}"></a></td>
+                    <td th:text="${w.type}"></td>
+                    <td th:text="${w.city}"></td>
+                    <td><i class="fas fa-star text-warning"></i>
+                        <span th:text="${w.rating}"></span></td>
+                    <td th:text="${w.contactPerson + ' / ' + w.phone}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

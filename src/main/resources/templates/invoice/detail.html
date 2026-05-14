@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title th:text="${invoice.invoiceNumber}">Invoice</title></head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-file-invoice-dollar text-primary"></i>
+            <span th:text="${invoice.invoiceNumber}"></span>
+            <span class="badge ms-2"
+                  th:classappend="${invoice.status.name() == 'PAID' ? 'bg-success' :
+                                      invoice.status.name() == 'SENT' ? 'bg-info' :
+                                      invoice.status.name() == 'OVERDUE' ? 'bg-danger' :
+                                      invoice.status.name() == 'PARTIAL_PAID' ? 'bg-warning' :
+                                      invoice.status.name() == 'CANCELLED' ? 'bg-secondary' : 'bg-light text-dark'}"
+                  th:text="${invoice.status}"></span>
+        </h2>
+        <div>
+            <form th:if="${invoice.status.name() == 'DRAFT'}"
+                  th:action="@{/invoices/{id}/send(id=${invoice.id})}" method="post" class="d-inline">
+                <button class="btn btn-outline-primary"><i class="fas fa-paper-plane"></i> Send</button>
+            </form>
+            <a th:if="${invoice.status.name() != 'PAID' && invoice.status.name() != 'CANCELLED'}"
+               th:href="@{/invoices/{id}/payment(id=${invoice.id})}" class="btn btn-success">
+                <i class="fas fa-money-check"></i> Record Payment
+            </a>
+            <a th:href="@{/invoices}" class="btn btn-light">Back</a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white"><h6 class="mb-0">Invoice Information</h6></div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Client</dt>
+                        <dd class="col-sm-8" th:text="${invoice.client.name}"></dd>
+                        <dt class="col-sm-4">Work Order</dt>
+                        <dd class="col-sm-8">
+                            <a th:href="@{/workorders/{id}(id=${invoice.workOrder.id})}"
+                               th:text="${invoice.workOrder.workOrderNumber}"></a>
+                        </dd>
+                        <dt class="col-sm-4">Invoice Date</dt>
+                        <dd class="col-sm-8" th:text="${#temporals.format(invoice.invoiceDate, 'dd MMM yyyy')}"></dd>
+                        <dt class="col-sm-4">Due Date</dt>
+                        <dd class="col-sm-8" th:text="${#temporals.format(invoice.dueDate, 'dd MMM yyyy')}"></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white"><h6 class="mb-0">Payments</h6></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                        <tr><th>Payment #</th><th>Date</th><th>Method</th><th class="text-end">Amount</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(payments)}">
+                            <td colspan="4" class="text-center text-muted">No payments yet</td>
+                        </tr>
+                        <tr th:each="p : ${payments}">
+                            <td th:text="${p.paymentNumber}"></td>
+                            <td th:text="${#temporals.format(p.paymentDate, 'dd MMM yyyy')}"></td>
+                            <td th:text="${p.paymentMethod}"></td>
+                            <td class="text-end"
+                                th:text="${'Rp ' + #numbers.formatDecimal(p.amount, 0, 'POINT', 0, 'POINT')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white"><h6 class="mb-0">Amounts</h6></div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-6">Subtotal</dt>
+                        <dd class="col-sm-6 text-end"
+                            th:text="${'Rp ' + #numbers.formatDecimal(invoice.subtotal, 0, 'POINT', 0, 'POINT')}"></dd>
+                        <dt class="col-sm-6">Discount</dt>
+                        <dd class="col-sm-6 text-end"
+                            th:text="${'Rp ' + #numbers.formatDecimal(invoice.discountAmount, 0, 'POINT', 0, 'POINT')}"></dd>
+                        <dt class="col-sm-6">Tax (PPN)</dt>
+                        <dd class="col-sm-6 text-end"
+                            th:text="${'Rp ' + #numbers.formatDecimal(invoice.taxAmount, 0, 'POINT', 0, 'POINT')}"></dd>
+                        <dt class="col-sm-6 h5 mt-2">Total</dt>
+                        <dd class="col-sm-6 text-end h5 mt-2 text-primary"
+                            th:text="${'Rp ' + #numbers.formatDecimal(invoice.totalAmount, 0, 'POINT', 0, 'POINT')}"></dd>
+                        <dt class="col-sm-6">Paid</dt>
+                        <dd class="col-sm-6 text-end text-success"
+                            th:text="${'Rp ' + #numbers.formatDecimal(invoice.paidAmount, 0, 'POINT', 0, 'POINT')}"></dd>
+                        <dt class="col-sm-6">Balance</dt>
+                        <dd class="col-sm-6 text-end fw-bold"
+                            th:text="${invoice.balance != null ? 'Rp ' + #numbers.formatDecimal(invoice.balance, 0, 'POINT', 0, 'POINT') : '-'}"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

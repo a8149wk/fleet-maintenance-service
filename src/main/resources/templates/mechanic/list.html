@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Mechanics</title></head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-user-cog text-primary"></i> Mechanics</h2>
+        <a th:href="@{/mechanics/create}" class="btn btn-primary"><i class="fas fa-plus"></i> New Mechanic</a>
+    </div>
+    <form th:action="@{/mechanics}" method="get" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Workshop</label>
+                <select name="workshopId" class="form-select">
+                    <option value="">All</option>
+                    <option th:each="w : ${workshops}" th:value="${w.id}" th:text="${w.name}"
+                            th:selected="${w.id.toString() == param.workshopId}"></option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" th:value="${param.search}"/>
+            </div>
+            <div class="col-md-2"><button class="btn btn-primary w-100">Filter</button></div>
+        </div>
+    </form>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr><th>Code</th><th>Name</th><th>Specialization</th><th>Workshop</th><th>Experience</th><th>Rating</th><th>Jobs</th></tr>
+                </thead>
+                <tbody>
+                <tr th:if="${mechanics.empty}">
+                    <td colspan="7" class="text-center text-muted py-4">No mechanics</td>
+                </tr>
+                <tr th:each="m : ${mechanics.content}">
+                    <td th:text="${m.code}"></td>
+                    <td><a th:href="@{/mechanics/{id}(id=${m.id})}" th:text="${m.fullName}"></a></td>
+                    <td th:text="${m.specialization}"></td>
+                    <td th:text="${m.workshop != null ? m.workshop.name : '-'}"></td>
+                    <td th:text="${m.experienceYears + ' years'}"></td>
+                    <td><i class="fas fa-star text-warning"></i> <span th:text="${m.rating}"></span></td>
+                    <td th:text="${m.totalJobs}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

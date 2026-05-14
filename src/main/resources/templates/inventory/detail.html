@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Inventory Detail</title></head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-3"><i class="fas fa-warehouse text-primary"></i>
+        <span th:text="${inventory.sparePart.name}"></span>
+        <small class="text-muted" th:text="' (' + ${inventory.sparePart.partNumber} + ')'"></small>
+    </h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Location</dt><dd class="col-sm-9" th:text="${inventory.location.name}"></dd>
+                <dt class="col-sm-3">Quantity</dt><dd class="col-sm-9" th:text="${inventory.quantity}"></dd>
+                <dt class="col-sm-3">Reserved</dt><dd class="col-sm-9" th:text="${inventory.reservedQuantity}"></dd>
+                <dt class="col-sm-3">Available</dt><dd class="col-sm-9" th:text="${inventory.effectiveAvailableQuantity}"></dd>
+                <dt class="col-sm-3">Min Stock Level</dt><dd class="col-sm-9" th:text="${inventory.minStockLevel}"></dd>
+                <dt class="col-sm-3">Reorder Point</dt><dd class="col-sm-9" th:text="${inventory.reorderPoint}"></dd>
+                <dt class="col-sm-3">Unit Cost</dt><dd class="col-sm-9"
+                    th:text="${inventory.unitCost != null ? 'Rp ' + #numbers.formatDecimal(inventory.unitCost, 0, 'POINT', 0, 'POINT') : '-'}"></dd>
+                <dt class="col-sm-3">Last Restock</dt><dd class="col-sm-9"
+                    th:text="${inventory.lastRestockDate != null ? #temporals.format(inventory.lastRestockDate, 'dd MMM yyyy') : '-'}"></dd>
+            </dl>
+        </div>
+    </div>
+</section>
+</body>
+</html>

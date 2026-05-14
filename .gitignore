@@ -1,0 +1,68 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.eclipse/
+.settings/
+.classpath
+.project
+*.swp
+*.swo
+*~
+
+# Spring Boot - local-only overrides (the committed application-dev.properties
+# is the standard dev profile and IS tracked in git).
+application-local.properties
+application-prod.properties
+
+# Logs
+*.log
+logs/
+spring.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads
+uploads/
+files/
+
+# Build
+*.class
+*.jar
+*.war
+*.ear
+
+# Test
+.pytest_cache/
+__pycache__/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Node (if using frontend build tools)
+node_modules/
+npm-debug.log
+yarn-error.log

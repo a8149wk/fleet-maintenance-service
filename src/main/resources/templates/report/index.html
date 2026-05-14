@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Reports</title></head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-4"><i class="fas fa-chart-line text-primary"></i> Reports</h2>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-tasks fa-3x text-primary mb-3"></i>
+                    <h5>Work Orders</h5>
+                    <p class="text-muted small">Report by date range</p>
+                    <a th:href="@{/reports/workorders}" class="btn btn-primary">View Report</a>
+                    <div class="mt-2 d-flex gap-1 justify-content-center">
+                        <a th:href="@{/reports/workorders/export/pdf}" class="btn btn-sm btn-outline-danger">PDF</a>
+                        <a th:href="@{/reports/workorders/export/excel}" class="btn btn-sm btn-outline-success">Excel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-warehouse fa-3x text-warning mb-3"></i>
+                    <h5>Inventory</h5>
+                    <p class="text-muted small">Low stock alerts</p>
+                    <a th:href="@{/reports/inventory}" class="btn btn-primary">View Report</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-money-bill-wave fa-3x text-success mb-3"></i>
+                    <h5>Financial</h5>
+                    <p class="text-muted small">Revenue, outstanding invoices</p>
+                    <a th:href="@{/reports/financial}" class="btn btn-primary">View Report</a>
+                    <div class="mt-2 d-flex gap-1 justify-content-center">
+                        <a th:href="@{/reports/invoices/export/pdf}" class="btn btn-sm btn-outline-danger">PDF</a>
+                        <a th:href="@{/reports/invoices/export/excel}" class="btn btn-sm btn-outline-success">Excel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

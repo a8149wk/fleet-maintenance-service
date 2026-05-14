@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${wo.workOrderNumber}">WO Detail</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">
+            <i class="fas fa-clipboard-list text-primary"></i>
+            <span th:text="${wo.workOrderNumber}">WO-0001</span>
+            <span class="badge ms-2"
+                  th:classappend="${wo.status.name() == 'COMPLETED' ? 'bg-success' :
+                                       wo.status.name() == 'IN_PROGRESS' ? 'bg-info' :
+                                       wo.status.name() == 'APPROVED' ? 'bg-primary' :
+                                       wo.status.name() == 'REJECTED' ? 'bg-danger' :
+                                       wo.status.name() == 'CANCELLED' ? 'bg-secondary' :
+                                       wo.status.name() == 'BILLED' ? 'bg-dark' : 'bg-warning'}"
+                  th:text="${wo.status}"></span>
+        </h2>
+        <a th:href="@{/workorders}" class="btn btn-light"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white"><h6 class="mb-0">Details</h6></div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Vehicle</dt>
+                        <dd class="col-sm-9" th:text="${wo.vehicle.licensePlate + ' - ' + wo.vehicle.brand + ' ' + wo.vehicle.model}"></dd>
+                        <dt class="col-sm-3">Client</dt>
+                        <dd class="col-sm-9" th:text="${wo.client.name}"></dd>
+                        <dt class="col-sm-3">Workshop</dt>
+                        <dd class="col-sm-9" th:text="${wo.workshop != null ? wo.workshop.name : '-'}"></dd>
+                        <dt class="col-sm-3">Mechanic</dt>
+                        <dd class="col-sm-9" th:text="${wo.assignedMechanic != null ? wo.assignedMechanic.fullName : 'Unassigned'}"></dd>
+                        <dt class="col-sm-3">Service Type</dt>
+                        <dd class="col-sm-9" th:text="${wo.serviceType}"></dd>
+                        <dt class="col-sm-3">Execution Type</dt>
+                        <dd class="col-sm-9" th:text="${wo.executionType}"></dd>
+                        <dt class="col-sm-3">Description</dt>
+                        <dd class="col-sm-9" th:text="${wo.requestDescription}"></dd>
+                        <dt class="col-sm-3">Diagnosis</dt>
+                        <dd class="col-sm-9" th:text="${wo.diagnosis ?: '-'}"></dd>
+                        <dt class="col-sm-3">Estimated Cost</dt>
+                        <dd class="col-sm-9"
+                            th:text="${wo.estimatedCost != null ? 'Rp ' + #numbers.formatDecimal(wo.estimatedCost, 0, 'POINT', 0, 'POINT') : '-'}"></dd>
+                        <dt class="col-sm-3">Actual Cost</dt>
+                        <dd class="col-sm-9"
+                            th:text="${wo.actualCost != null ? 'Rp ' + #numbers.formatDecimal(wo.actualCost, 0, 'POINT', 0, 'POINT') : '-'}"></dd>
+                        <dt class="col-sm-3">Requested</dt>
+                        <dd class="col-sm-9" th:text="${#temporals.format(wo.requestedDate, 'dd MMM yyyy HH:mm')}"></dd>
+                        <dt class="col-sm-3" th:if="${wo.approvedDate != null}">Approved</dt>
+                        <dd class="col-sm-9" th:if="${wo.approvedDate != null}"
+                            th:text="${#temporals.format(wo.approvedDate, 'dd MMM yyyy HH:mm')}"></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3" th:if="${!#lists.isEmpty(wo.items)}">
+                <div class="card-header bg-white"><h6 class="mb-0">Items</h6></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Type</th><th>Item</th><th>Qty</th>
+                            <th class="text-end">Unit</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="it : ${wo.items}">
+                            <td th:text="${it.itemType}"></td>
+                            <td th:text="${it.sparePart != null ? it.sparePart.name : it.serviceName}"></td>
+                            <td th:text="${it.quantity}"></td>
+                            <td class="text-end"
+                                th:text="${'Rp ' + #numbers.formatDecimal(it.unitPrice, 0, 'POINT', 0, 'POINT')}"></td>
+                            <td class="text-end"
+                                th:text="${'Rp ' + #numbers.formatDecimal(it.subtotal, 0, 'POINT', 0, 'POINT')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white"><h6 class="mb-0">Actions</h6></div>
+                <div class="card-body d-grid gap-2">
+                    <a th:if="${wo.status.name() == 'REQUESTED' || wo.status.name() == 'ESTIMATED'}"
+                       th:href="@{/workorders/{id}/estimation(id=${wo.id})}" class="btn btn-outline-primary">
+                        <i class="fas fa-calculator"></i> Create / Edit Estimation
+                    </a>
+                    <form th:if="${wo.status.name() == 'ESTIMATED'}"
+                          th:action="@{/workorders/{id}/approve(id=${wo.id})}" method="post" class="d-grid">
+                        <button class="btn btn-success" sec:authorize="hasAnyRole('ADMIN','MANAGER','CLIENT')">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                    </form>
+                    <form th:if="${wo.status.name() == 'ESTIMATED'}"
+                          th:action="@{/workorders/{id}/reject(id=${wo.id})}" method="post">
+                        <div class="input-group">
+                            <input name="reason" class="form-control" placeholder="Rejection reason"/>
+                            <button class="btn btn-outline-danger"><i class="fas fa-times"></i> Reject</button>
+                        </div>
+                    </form>
+                    <form th:if="${wo.status.name() == 'APPROVED'}"
+                          th:action="@{/workorders/{id}/start(id=${wo.id})}" method="post">
+                        <div class="input-group">
+                            <select name="mechanicId" class="form-select">
+                                <option value="">-- Select Mechanic --</option>
+                                <option th:each="m : ${mechanics}" th:value="${m.id}" th:text="${m.fullName}"></option>
+                            </select>
+                            <button class="btn btn-info text-white"><i class="fas fa-play"></i> Start</button>
+                        </div>
+                    </form>
+                    <a th:if="${wo.status.name() == 'IN_PROGRESS'}"
+                       th:href="@{/workorders/{id}/complete(id=${wo.id})}" class="btn btn-success">
+                        <i class="fas fa-check-double"></i> Complete Work
+                    </a>
+                    <form th:if="${wo.status.name() != 'COMPLETED' && wo.status.name() != 'BILLED' && wo.status.name() != 'CANCELLED'}"
+                          th:action="@{/workorders/{id}/cancel(id=${wo.id})}" method="post">
+                        <div class="input-group">
+                            <input name="reason" class="form-control" placeholder="Cancel reason"/>
+                            <button class="btn btn-outline-secondary"><i class="fas fa-ban"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div th:if="${invoice != null}" class="card shadow-sm">
+                <div class="card-header bg-white"><h6 class="mb-0">Invoice</h6></div>
+                <div class="card-body">
+                    <p class="mb-1">
+                        <a th:href="@{/invoices/{id}(id=${invoice.id})}" th:text="${invoice.invoiceNumber}"></a>
+                    </p>
+                    <p class="mb-1">
+                        Total: <strong th:text="${'Rp ' + #numbers.formatDecimal(invoice.totalAmount, 0, 'POINT', 0, 'POINT')}"></strong>
+                    </p>
+                    <p class="mb-0">Status: <span class="badge bg-secondary" th:text="${invoice.status}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

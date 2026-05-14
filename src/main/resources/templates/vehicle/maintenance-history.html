@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Vehicle History</title></head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-3"><i class="fas fa-history text-primary"></i> Maintenance History
+        - <span th:text="${vehicle.licensePlate}"></span></h2>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>WO#</th><th>Service</th><th>Status</th>
+                    <th>Mechanic</th><th>Date</th>
+                    <th class="text-end">Cost</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(workOrders)}">
+                    <td colspan="6" class="text-center text-muted py-4">No history yet</td>
+                </tr>
+                <tr th:each="w : ${workOrders}">
+                    <td><a th:href="@{/workorders/{id}(id=${w.id})}" th:text="${w.workOrderNumber}"></a></td>
+                    <td th:text="${w.serviceType}"></td>
+                    <td th:text="${w.status}"></td>
+                    <td th:text="${w.assignedMechanic != null ? w.assignedMechanic.fullName : '-'}"></td>
+                    <td th:text="${#temporals.format(w.requestedDate, 'dd MMM yyyy')}"></td>
+                    <td class="text-end"
+                        th:text="${w.totalAmount != null ? 'Rp ' + #numbers.formatDecimal(w.totalAmount, 0, 'POINT', 0, 'POINT') : '-'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

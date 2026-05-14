@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Inventory</title></head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-warehouse text-primary"></i> Inventory</h2>
+        <div>
+            <a th:href="@{/inventory/low-stock}" class="btn btn-outline-warning">
+                <i class="fas fa-exclamation-triangle"></i> Low Stock
+            </a>
+            <a th:href="@{/inventory/movement}" class="btn btn-primary">
+                <i class="fas fa-exchange-alt"></i> Record Movement
+            </a>
+        </div>
+    </div>
+    <form th:action="@{/inventory}" method="get" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Location</label>
+                <select name="locationId" class="form-select">
+                    <option value="">All</option>
+                    <option th:each="l : ${locations}" th:value="${l.id}" th:text="${l.name}"
+                            th:selected="${l.id.toString() == param.locationId}"></option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" th:value="${param.search}"/>
+            </div>
+            <div class="col-md-2"><button class="btn btn-primary w-100">Filter</button></div>
+        </div>
+    </form>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Part #</th><th>Name</th><th>Location</th>
+                    <th class="text-end">Qty</th>
+                    <th class="text-end">Reserved</th>
+                    <th class="text-end">Available</th>
+                    <th class="text-end">Unit Cost</th>
+                    <th class="text-end">Reorder</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${items.empty}">
+                    <td colspan="8" class="text-center text-muted py-4">No inventory data</td>
+                </tr>
+                <tr th:each="i : ${items.content}"
+                    th:classappend="${i.quantity <= i.reorderPoint} ? 'table-warning'">
+                    <td th:text="${i.sparePart.partNumber}"></td>
+                    <td><a th:href="@{/inventory/{id}(id=${i.id})}" th:text="${i.sparePart.name}"></a></td>
+                    <td th:text="${i.location.name}"></td>
+                    <td class="text-end" th:text="${i.quantity}"></td>
+                    <td class="text-end" th:text="${i.reservedQuantity}"></td>
+                    <td class="text-end fw-bold" th:text="${i.effectiveAvailableQuantity}"></td>
+                    <td class="text-end"
+                        th:text="${i.unitCost != null ? 'Rp ' + #numbers.formatDecimal(i.unitCost, 0, 'POINT', 0, 'POINT') : '-'}"></td>
+                    <td class="text-end" th:text="${i.reorderPoint}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

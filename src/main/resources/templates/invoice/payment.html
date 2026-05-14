@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Record Payment</title></head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-3"><i class="fas fa-money-check text-success"></i> Record Payment -
+        <span th:text="${invoice.invoiceNumber}"></span></h2>
+    <div class="alert alert-info">
+        Balance:
+        <strong th:text="${invoice.balance != null ? 'Rp ' + #numbers.formatDecimal(invoice.balance, 0, 'POINT', 0, 'POINT') : '-'}"></strong>
+    </div>
+    <form th:action="@{/invoices/{id}/payment(id=${invoice.id})}" th:object="${payment}" method="post"
+          class="card card-body shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Amount *</label>
+                <input type="number" step="0.01" th:field="*{amount}" class="form-control" required/>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Payment Method *</label>
+                <select th:field="*{paymentMethod}" class="form-select" required>
+                    <option th:each="m : ${paymentMethods}" th:value="${m}" th:text="${m}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Payment Date</label>
+                <input type="date" th:field="*{paymentDate}" class="form-control"/>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Reference Number</label>
+                <input th:field="*{referenceNumber}" class="form-control"/>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Bank Name</label>
+                <input th:field="*{bankName}" class="form-control"/>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Account Number</label>
+                <input th:field="*{accountNumber}" class="form-control"/>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Notes</label>
+                <textarea th:field="*{notes}" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-success"><i class="fas fa-save me-1"></i> Save</button>
+            <a th:href="@{/invoices/{id}(id=${invoice.id})}" class="btn btn-light">Cancel</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>

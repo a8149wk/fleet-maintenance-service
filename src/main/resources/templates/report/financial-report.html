@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Financial Report</title></head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-3"><i class="fas fa-money-bill-wave text-primary"></i> Financial Report</h2>
+    <form th:action="@{/reports/financial}" method="get" class="card card-body mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Start Date</label>
+                <input type="date" name="startDate" th:value="${startDate}" class="form-control"/>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">End Date</label>
+                <input type="date" name="endDate" th:value="${endDate}" class="form-control"/>
+            </div>
+            <div class="col-md-4"><button class="btn btn-primary w-100">Generate</button></div>
+        </div>
+    </form>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body text-center">
+            <div class="text-muted">Revenue (Paid Invoices)</div>
+            <div class="display-6 text-success"
+                 th:text="${'Rp ' + #numbers.formatDecimal(revenue, 0, 'POINT', 0, 'POINT')}"></div>
+            <div class="text-muted small"
+                 th:text="'Period: ' + ${#temporals.format(startDate, 'dd MMM yyyy')} + ' - ' + ${#temporals.format(endDate, 'dd MMM yyyy')}"></div>
+        </div>
+    </div>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Invoice #</th><th>Client</th><th>Date</th>
+                    <th class="text-end">Total</th><th class="text-end">Paid</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="i : ${invoices}">
+                    <td><a th:href="@{/invoices/{id}(id=${i.id})}" th:text="${i.invoiceNumber}"></a></td>
+                    <td th:text="${i.client.name}"></td>
+                    <td th:text="${#temporals.format(i.invoiceDate, 'dd MMM yyyy')}"></td>
+                    <td class="text-end"
+                        th:text="${'Rp ' + #numbers.formatDecimal(i.totalAmount, 0, 'POINT', 0, 'POINT')}"></td>
+                    <td class="text-end"
+                        th:text="${'Rp ' + #numbers.formatDecimal(i.paidAmount, 0, 'POINT', 0, 'POINT')}"></td>
+                    <td><span class="badge bg-secondary" th:text="${i.status}"></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

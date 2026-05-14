@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Low Stock Alerts</title></head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-3"><i class="fas fa-exclamation-triangle text-warning"></i> Low Stock Alerts</h2>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Part #</th><th>Name</th><th>Location</th>
+                    <th class="text-end">Current</th>
+                    <th class="text-end">Reserved</th>
+                    <th class="text-end">Available</th>
+                    <th class="text-end">Reorder Point</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(alerts)}">
+                    <td colspan="7" class="text-center text-muted py-4">All stock levels OK</td>
+                </tr>
+                <tr th:each="a : ${alerts}" class="table-warning">
+                    <td th:text="${a.partNumber}"></td>
+                    <td th:text="${a.partName}"></td>
+                    <td th:text="${a.locationName}"></td>
+                    <td class="text-end" th:text="${a.currentQuantity}"></td>
+                    <td class="text-end" th:text="${a.reservedQuantity}"></td>
+                    <td class="text-end fw-bold" th:text="${a.availableQuantity}"></td>
+                    <td class="text-end" th:text="${a.reorderPoint}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

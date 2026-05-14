@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${vehicle.licensePlate}">Vehicle</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-car text-primary"></i> <span th:text="${vehicle.licensePlate}"></span></h2>
+        <div>
+            <a th:href="@{/vehicles/{id}/edit(id=${vehicle.id})}" class="btn btn-outline-primary"><i class="fas fa-edit"></i> Edit</a>
+            <a th:href="@{/vehicles}" class="btn btn-light"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Client</dt><dd class="col-sm-8" th:text="${vehicle.client.name}"></dd>
+                        <dt class="col-sm-4">Brand / Model</dt><dd class="col-sm-8" th:text="${vehicle.brand + ' ' + vehicle.model}"></dd>
+                        <dt class="col-sm-4">Year</dt><dd class="col-sm-8" th:text="${vehicle.year}"></dd>
+                        <dt class="col-sm-4">Color</dt><dd class="col-sm-8" th:text="${vehicle.color ?: '-'}"></dd>
+                        <dt class="col-sm-4">VIN</dt><dd class="col-sm-8" th:text="${vehicle.vin ?: '-'}"></dd>
+                        <dt class="col-sm-4">Engine #</dt><dd class="col-sm-8" th:text="${vehicle.engineNumber ?: '-'}"></dd>
+                        <dt class="col-sm-4">Fuel</dt><dd class="col-sm-8" th:text="${vehicle.fuelType}"></dd>
+                        <dt class="col-sm-4">Transmission</dt><dd class="col-sm-8" th:text="${vehicle.transmissionType}"></dd>
+                        <dt class="col-sm-4">Odometer</dt><dd class="col-sm-8" th:text="${(vehicle.currentOdometer ?: 0)} + ' km'"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white"><h6 class="mb-0">Maintenance History</h6></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                        <tr><th>WO#</th><th>Service</th><th>Status</th><th>Date</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(workOrders)}">
+                            <td colspan="4" class="text-center text-muted">No history</td>
+                        </tr>
+                        <tr th:each="wo : ${workOrders}">
+                            <td><a th:href="@{/workorders/{id}(id=${wo.id})}" th:text="${wo.workOrderNumber}"></a></td>
+                            <td th:text="${wo.serviceType}"></td>
+                            <td th:text="${wo.status}"></td>
+                            <td th:text="${#temporals.format(wo.requestedDate, 'dd MMM yyyy')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

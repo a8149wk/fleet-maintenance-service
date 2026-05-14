@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head><title>Workshop Form</title></head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-3"><i class="fas fa-tools text-primary"></i>
+        <span th:text="${workshop.id == null} ? 'New Workshop' : 'Edit Workshop'"></span></h2>
+    <form th:action="${workshop.id == null} ? @{/workshops} : @{/workshops/{id}(id=${workshop.id})}"
+          th:object="${workshop}" method="post" class="card card-body shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">Code</label><input th:field="*{code}" class="form-control"/></div>
+            <div class="col-md-6"><label class="form-label">Name *</label><input th:field="*{name}" class="form-control" required/></div>
+            <div class="col-md-3">
+                <label class="form-label">Type *</label>
+                <select th:field="*{type}" class="form-select" required>
+                    <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
+                </select>
+            </div>
+            <div class="col-12"><label class="form-label">Address</label><textarea th:field="*{address}" class="form-control" rows="2"></textarea></div>
+            <div class="col-md-4"><label class="form-label">City</label><input th:field="*{city}" class="form-control"/></div>
+            <div class="col-md-4"><label class="form-label">Province</label><input th:field="*{province}" class="form-control"/></div>
+            <div class="col-md-4"><label class="form-label">Postal Code</label><input th:field="*{postalCode}" class="form-control"/></div>
+            <div class="col-md-4"><label class="form-label">Phone</label><input th:field="*{phone}" class="form-control"/></div>
+            <div class="col-md-4"><label class="form-label">Email</label><input type="email" th:field="*{email}" class="form-control"/></div>
+            <div class="col-md-4"><label class="form-label">Contact Person</label><input th:field="*{contactPerson}" class="form-control"/></div>
+            <div class="col-md-6"><label class="form-label">Operating Hours</label><input th:field="*{operatingHours}" class="form-control"/></div>
+            <div class="col-md-3"><label class="form-label">Service Capacity</label><input type="number" th:field="*{serviceCapacity}" class="form-control"/></div>
+            <div class="col-md-3"><label class="form-label">Rating</label><input type="number" step="0.1" th:field="*{rating}" class="form-control" min="0" max="5"/></div>
+            <div class="col-12"><label class="form-label">Specialization</label><textarea th:field="*{specialization}" class="form-control" rows="2"></textarea></div>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-primary"><i class="fas fa-save me-1"></i> Save</button>
+            <a th:href="@{/workshops}" class="btn btn-light">Cancel</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>
