@@ -29,6 +29,12 @@ buildNumber.properties
 application-local.properties
 application-prod.properties
 
+# Internal/spec docs - kept locally for reference only, not pushed to GitHub.
+# (README.md is the public entrypoint and IS tracked.)
+CURSOR_INSTRUCTIONS.md
+PROJECT_SPECIFICATION.md
+QUICK_REFERENCE.md
+
 # Logs
 *.log
 logs/
